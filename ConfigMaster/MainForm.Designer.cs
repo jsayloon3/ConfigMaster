@@ -37,6 +37,9 @@
             splitContainer1 = new SplitContainer();
             SectionTreeView = new TreeView();
             SettingsListView = new ListView();
+            columnHeader1 = new ColumnHeader();
+            columnHeader2 = new ColumnHeader();
+            contextMenuStripListView = new ContextMenuStrip(components);
             HeaderPanel = new Panel();
             HeaderPanel_ContextMenuArea = new Panel();
             menuStripSetting = new MenuStrip();
@@ -130,12 +133,14 @@
             // splitContainer1.Panel1
             // 
             splitContainer1.Panel1.Controls.Add(SectionTreeView);
+            splitContainer1.Panel1.RightToLeft = RightToLeft.No;
             // 
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(SettingsListView);
+            splitContainer1.Panel2.RightToLeft = RightToLeft.No;
             splitContainer1.Size = new Size(1157, 568);
-            splitContainer1.SplitterDistance = 385;
+            splitContainer1.SplitterDistance = 299;
             splitContainer1.TabIndex = 0;
             // 
             // SectionTreeView
@@ -146,18 +151,46 @@
             SectionTreeView.Location = new Point(0, 0);
             SectionTreeView.Name = "SectionTreeView";
             SectionTreeView.SelectedImageIndex = 13;
-            SectionTreeView.Size = new Size(385, 568);
+            SectionTreeView.Size = new Size(299, 568);
             SectionTreeView.TabIndex = 0;
+            SectionTreeView.NodeMouseClick += SectionTreeView_NodeMouseClick;
             // 
             // SettingsListView
             // 
+            SettingsListView.Activation = ItemActivation.OneClick;
+            SettingsListView.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2 });
+            SettingsListView.ContextMenuStrip = contextMenuStripListView;
             SettingsListView.Dock = DockStyle.Fill;
+            SettingsListView.FullRowSelect = true;
+            SettingsListView.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            SettingsListView.HotTracking = true;
+            SettingsListView.HoverSelection = true;
             SettingsListView.Location = new Point(0, 0);
+            SettingsListView.MultiSelect = false;
             SettingsListView.Name = "SettingsListView";
-            SettingsListView.Size = new Size(768, 568);
+            SettingsListView.ShowItemToolTips = true;
+            SettingsListView.Size = new Size(854, 568);
             SettingsListView.SmallImageList = imageList1;
             SettingsListView.TabIndex = 0;
             SettingsListView.UseCompatibleStateImageBehavior = false;
+            SettingsListView.View = View.Details;
+            SettingsListView.MouseClick += SettingsListView_MouseClick;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "Settings Name";
+            columnHeader1.Width = 300;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Text = "Settings Value";
+            columnHeader2.Width = 600;
+            // 
+            // contextMenuStripListView
+            // 
+            contextMenuStripListView.ImageScalingSize = new Size(20, 20);
+            contextMenuStripListView.Name = "contextMenuStripListView";
+            contextMenuStripListView.Size = new Size(61, 4);
             // 
             // HeaderPanel
             // 
@@ -238,6 +271,7 @@
             SearchTextBox.Text = "";
             SearchTextBox.TrailingIcon = (Image)resources.GetObject("SearchTextBox.TrailingIcon");
             SearchTextBox.UseAccent = false;
+            SearchTextBox.TextChanged += SearchTextBox_TextChanged;
             // 
             // tabPage2
             // 
@@ -264,12 +298,14 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.BackColor = Color.DodgerBlue;
             label1.Dock = DockStyle.Right;
-            label1.Location = new Point(1090, 3);
+            label1.ForeColor = Color.RoyalBlue;
+            label1.Location = new Point(1091, 3);
             label1.Name = "label1";
-            label1.Size = new Size(78, 20);
+            label1.Size = new Size(77, 20);
             label1.TabIndex = 1;
-            label1.Text = "Iripple Inc.";
+            label1.Text = "Build 1.0.1";
             // 
             // iniBrowser
             // 
@@ -290,6 +326,7 @@
             Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
             Padding = new Padding(3, 64, 3, 4);
+            RightToLeft = RightToLeft.No;
             Text = "Config Master";
             WindowState = FormWindowState.Maximized;
             Load += MainForm_Load;
@@ -330,5 +367,8 @@
         private ListView SettingsListView;
         private OpenFileDialog iniBrowser;
         private Label label1;
+        private ColumnHeader columnHeader1;
+        private ColumnHeader columnHeader2;
+        private ContextMenuStrip contextMenuStripListView;
     }
 }

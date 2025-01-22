@@ -42,15 +42,15 @@ namespace ConfigMaster.DAL
                 }
             );
 
-            modelBuilder.Entity<PathInfo>().HasData(
-                new PathInfo
-                {
-                    Id = 1,
-                    Path = @"C:\BarterCX",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
-                }
-            );
+            //modelBuilder.Entity<PathInfo>().HasData(
+            //    new PathInfo
+            //    {
+            //        Id = 1,
+            //        Path = @"C:\BarterCX",
+            //        CreatedAt = DateTime.Now,
+            //        UpdatedAt = DateTime.Now
+            //    }
+            //);
         }
     }
 }

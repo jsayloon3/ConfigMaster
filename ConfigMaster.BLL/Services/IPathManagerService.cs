@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigMaster.DAL.Repositories
+namespace ConfigMaster.BLL.Services
 {
-    public interface IPathManagerRepository
+    public interface IPathManagerService
     {
         Task<PathInfo> GetPath();
         Task AddPath(PathInfo pathInfo);

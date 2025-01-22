@@ -15,6 +15,13 @@ namespace ConfigMaster.DAL.Repositories
         {
             _dbContext = dbContext;
         }
+
+        public async Task AddPath(PathInfo pathInfo)
+        {
+            _dbContext.PathInfo.Add(pathInfo);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<PathInfo?> GetPath()
         {
             return await _dbContext.PathInfo.SingleOrDefaultAsync(x => x.Id == 1);

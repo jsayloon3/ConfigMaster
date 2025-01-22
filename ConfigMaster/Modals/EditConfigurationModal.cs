@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConfigMaster.BLL.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,16 +13,48 @@ namespace ConfigMaster.Modals
 {
     public partial class EditConfigurationModal : Form
     {
-        private string _title;
-        public EditConfigurationModal(string title)
+        private string _title = string.Empty;
+        private bool _isAdd = true;
+        private string _selectedSection = string.Empty;
+        private string _selectedSettingName = string.Empty;
+        private string _selectedSettingValue = string.Empty;
+
+        private IEnumerable<string> _sections = new List<string>();
+
+        public EditConfigurationModal()
         {
             InitializeComponent();
+        }
+
+        public void Initialize(string title, bool isAdd, IEnumerable<string>? sections, string selectedSection = "", string selectedSettingName = "", string selectedSettingValue = "")
+        {
             _title = title;
+            _isAdd = isAdd;
+            _selectedSection = selectedSection ?? string.Empty;
+            _selectedSettingName = selectedSettingName ?? string.Empty;
+            _selectedSettingValue = selectedSettingValue ?? string.Empty;
+            _sections = sections ?? new List<string>();
         }
 
         private void EditConfigurationModal_Load(object sender, EventArgs e)
         {
             TitleLabel.Text = _title;
+            if (_isAdd)
+            {
+                LoadSections();
+            }
+            else
+            { 
+                SectionComboBox.Text = _selectedSection;
+                SectionComboBox.Enabled = false;
+                SettingNameTextBox.Text = _selectedSettingName;
+                SettingValueTextBox.Text = _selectedSettingValue;
+            }
+        }
+
+        private void LoadSections()
+        {
+            SectionComboBox.Items.AddRange(_sections.ToArray());
         }
 
         private void SaveButton_Click(object sender, EventArgs e)

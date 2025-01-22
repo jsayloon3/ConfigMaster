@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigMaster.DAL.Repositories
+namespace ConfigMaster.BLL.Services
 {
-    public interface IIniFileRepository
+    public interface IIniFileService
     {
         Task LoadFile();
         Task<IEnumerable<string>> GetSections();
-        Task<Dictionary<string, string>> GetKeyValues(string section);
+        Task<Dictionary<string, string>> GetKeyValuePairs(string section);
     }
 }
