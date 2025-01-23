@@ -87,7 +87,7 @@
             HeaderPanel.Dock = DockStyle.Top;
             HeaderPanel.Location = new Point(0, 0);
             HeaderPanel.Name = "HeaderPanel";
-            HeaderPanel.Size = new Size(800, 56);
+            HeaderPanel.Size = new Size(802, 56);
             HeaderPanel.TabIndex = 0;
             // 
             // HeaderPanel_TitleArea
@@ -97,7 +97,7 @@
             HeaderPanel_TitleArea.Location = new Point(0, 0);
             HeaderPanel_TitleArea.Name = "HeaderPanel_TitleArea";
             HeaderPanel_TitleArea.Padding = new Padding(10);
-            HeaderPanel_TitleArea.Size = new Size(800, 54);
+            HeaderPanel_TitleArea.Size = new Size(802, 54);
             HeaderPanel_TitleArea.TabIndex = 1;
             // 
             // TitleLabel
@@ -106,7 +106,7 @@
             TitleLabel.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
             TitleLabel.Location = new Point(10, 10);
             TitleLabel.Name = "TitleLabel";
-            TitleLabel.Size = new Size(780, 31);
+            TitleLabel.Size = new Size(782, 31);
             TitleLabel.TabIndex = 0;
             TitleLabel.Text = "Title";
             // 
@@ -116,7 +116,7 @@
             HeaderDividerPanel.Dock = DockStyle.Bottom;
             HeaderDividerPanel.Location = new Point(0, 54);
             HeaderDividerPanel.Name = "HeaderDividerPanel";
-            HeaderDividerPanel.Size = new Size(800, 2);
+            HeaderDividerPanel.Size = new Size(802, 2);
             HeaderDividerPanel.TabIndex = 0;
             // 
             // HeaderDivider
@@ -125,7 +125,7 @@
             HeaderDivider.Dock = DockStyle.Fill;
             HeaderDivider.Location = new Point(0, 0);
             HeaderDivider.Name = "HeaderDivider";
-            HeaderDivider.Size = new Size(800, 2);
+            HeaderDivider.Size = new Size(802, 2);
             HeaderDivider.TabIndex = 0;
             // 
             // FooterPanel
@@ -135,7 +135,7 @@
             FooterPanel.Dock = DockStyle.Bottom;
             FooterPanel.Location = new Point(0, 370);
             FooterPanel.Name = "FooterPanel";
-            FooterPanel.Size = new Size(800, 76);
+            FooterPanel.Size = new Size(802, 76);
             FooterPanel.TabIndex = 0;
             // 
             // panel9
@@ -146,14 +146,14 @@
             panel9.Location = new Point(0, 2);
             panel9.Name = "panel9";
             panel9.Padding = new Padding(10);
-            panel9.Size = new Size(800, 74);
+            panel9.Size = new Size(802, 74);
             panel9.TabIndex = 1;
             // 
             // panel11
             // 
             panel11.Controls.Add(CancelButton);
             panel11.Dock = DockStyle.Right;
-            panel11.Location = new Point(506, 10);
+            panel11.Location = new Point(508, 10);
             panel11.Name = "panel11";
             panel11.Padding = new Padding(3);
             panel11.Size = new Size(142, 54);
@@ -184,7 +184,7 @@
             // 
             panel10.Controls.Add(SaveButton);
             panel10.Dock = DockStyle.Right;
-            panel10.Location = new Point(648, 10);
+            panel10.Location = new Point(650, 10);
             panel10.Name = "panel10";
             panel10.Padding = new Padding(3);
             panel10.Size = new Size(142, 54);
@@ -217,7 +217,7 @@
             FooterDividerPanel.Dock = DockStyle.Top;
             FooterDividerPanel.Location = new Point(0, 0);
             FooterDividerPanel.Name = "FooterDividerPanel";
-            FooterDividerPanel.Size = new Size(800, 2);
+            FooterDividerPanel.Size = new Size(802, 2);
             FooterDividerPanel.TabIndex = 0;
             // 
             // FooterDivider
@@ -226,7 +226,7 @@
             FooterDivider.Dock = DockStyle.Fill;
             FooterDivider.Location = new Point(0, 0);
             FooterDivider.Name = "FooterDivider";
-            FooterDivider.Size = new Size(800, 2);
+            FooterDivider.Size = new Size(802, 2);
             FooterDivider.TabIndex = 0;
             // 
             // BodyPanel
@@ -237,7 +237,7 @@
             BodyPanel.Dock = DockStyle.Fill;
             BodyPanel.Location = new Point(0, 56);
             BodyPanel.Name = "BodyPanel";
-            BodyPanel.Size = new Size(800, 314);
+            BodyPanel.Size = new Size(802, 314);
             BodyPanel.TabIndex = 1;
             // 
             // panel6
@@ -249,7 +249,7 @@
             panel6.Location = new Point(0, 208);
             panel6.Name = "panel6";
             panel6.Padding = new Padding(10);
-            panel6.Size = new Size(800, 104);
+            panel6.Size = new Size(802, 104);
             panel6.TabIndex = 5;
             // 
             // SettingValueTextBox
@@ -258,7 +258,7 @@
             SettingValueTextBox.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SettingValueTextBox.Location = new Point(10, 40);
             SettingValueTextBox.Name = "SettingValueTextBox";
-            SettingValueTextBox.Size = new Size(780, 30);
+            SettingValueTextBox.Size = new Size(782, 30);
             SettingValueTextBox.TabIndex = 3;
             SettingValueTextBox.TextChanged += SettingValueTextBox_TextChanged;
             // 
@@ -268,7 +268,7 @@
             panel7.Dock = DockStyle.Bottom;
             panel7.Location = new Point(10, 72);
             panel7.Name = "panel7";
-            panel7.Size = new Size(780, 22);
+            panel7.Size = new Size(782, 22);
             panel7.TabIndex = 2;
             // 
             // SettingValueRequiredLabel
@@ -277,7 +277,7 @@
             SettingValueRequiredLabel.ForeColor = Color.Red;
             SettingValueRequiredLabel.Location = new Point(0, 0);
             SettingValueRequiredLabel.Name = "SettingValueRequiredLabel";
-            SettingValueRequiredLabel.Size = new Size(780, 22);
+            SettingValueRequiredLabel.Size = new Size(782, 22);
             SettingValueRequiredLabel.TabIndex = 0;
             SettingValueRequiredLabel.Text = "Required";
             // 
@@ -287,7 +287,7 @@
             panel8.Dock = DockStyle.Top;
             panel8.Location = new Point(10, 10);
             panel8.Name = "panel8";
-            panel8.Size = new Size(780, 30);
+            panel8.Size = new Size(782, 30);
             panel8.TabIndex = 0;
             // 
             // label6
@@ -296,7 +296,7 @@
             label6.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label6.Location = new Point(0, 0);
             label6.Name = "label6";
-            label6.Size = new Size(780, 30);
+            label6.Size = new Size(782, 30);
             label6.TabIndex = 0;
             label6.Text = "Setting Value";
             // 
@@ -309,7 +309,7 @@
             panel2.Location = new Point(0, 104);
             panel2.Name = "panel2";
             panel2.Padding = new Padding(10);
-            panel2.Size = new Size(800, 104);
+            panel2.Size = new Size(802, 104);
             panel2.TabIndex = 4;
             // 
             // SettingNameTextBox
@@ -318,7 +318,7 @@
             SettingNameTextBox.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SettingNameTextBox.Location = new Point(10, 40);
             SettingNameTextBox.Name = "SettingNameTextBox";
-            SettingNameTextBox.Size = new Size(780, 30);
+            SettingNameTextBox.Size = new Size(782, 30);
             SettingNameTextBox.TabIndex = 3;
             SettingNameTextBox.TextChanged += SettingNameTextBox_TextChanged;
             // 
@@ -328,7 +328,7 @@
             panel4.Dock = DockStyle.Bottom;
             panel4.Location = new Point(10, 72);
             panel4.Name = "panel4";
-            panel4.Size = new Size(780, 22);
+            panel4.Size = new Size(782, 22);
             panel4.TabIndex = 2;
             // 
             // SettingNameRequiredLabel
@@ -337,7 +337,7 @@
             SettingNameRequiredLabel.ForeColor = Color.Red;
             SettingNameRequiredLabel.Location = new Point(0, 0);
             SettingNameRequiredLabel.Name = "SettingNameRequiredLabel";
-            SettingNameRequiredLabel.Size = new Size(780, 22);
+            SettingNameRequiredLabel.Size = new Size(782, 22);
             SettingNameRequiredLabel.TabIndex = 0;
             SettingNameRequiredLabel.Text = "Required";
             // 
@@ -347,7 +347,7 @@
             panel5.Dock = DockStyle.Top;
             panel5.Location = new Point(10, 10);
             panel5.Name = "panel5";
-            panel5.Size = new Size(780, 30);
+            panel5.Size = new Size(782, 30);
             panel5.TabIndex = 0;
             // 
             // label4
@@ -356,7 +356,7 @@
             label4.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label4.Location = new Point(0, 0);
             label4.Name = "label4";
-            label4.Size = new Size(780, 30);
+            label4.Size = new Size(782, 30);
             label4.TabIndex = 0;
             label4.Text = "Setting Name";
             // 
@@ -369,7 +369,7 @@
             BodyPanel_SectionArea.Location = new Point(0, 0);
             BodyPanel_SectionArea.Name = "BodyPanel_SectionArea";
             BodyPanel_SectionArea.Padding = new Padding(10);
-            BodyPanel_SectionArea.Size = new Size(800, 104);
+            BodyPanel_SectionArea.Size = new Size(802, 104);
             BodyPanel_SectionArea.TabIndex = 0;
             // 
             // SectionComboBox
@@ -379,7 +379,7 @@
             SectionComboBox.FormattingEnabled = true;
             SectionComboBox.Location = new Point(10, 40);
             SectionComboBox.Name = "SectionComboBox";
-            SectionComboBox.Size = new Size(780, 31);
+            SectionComboBox.Size = new Size(782, 31);
             SectionComboBox.TabIndex = 3;
             SectionComboBox.SelectedIndexChanged += SectionComboBox_SelectedIndexChanged;
             SectionComboBox.TextChanged += SectionComboBox_TextChanged;
@@ -390,7 +390,7 @@
             panel3.Dock = DockStyle.Bottom;
             panel3.Location = new Point(10, 72);
             panel3.Name = "panel3";
-            panel3.Size = new Size(780, 22);
+            panel3.Size = new Size(782, 22);
             panel3.TabIndex = 2;
             // 
             // SectionRequiredLabel
@@ -399,7 +399,7 @@
             SectionRequiredLabel.ForeColor = Color.Red;
             SectionRequiredLabel.Location = new Point(0, 0);
             SectionRequiredLabel.Name = "SectionRequiredLabel";
-            SectionRequiredLabel.Size = new Size(780, 22);
+            SectionRequiredLabel.Size = new Size(782, 22);
             SectionRequiredLabel.TabIndex = 0;
             SectionRequiredLabel.Text = "Required";
             // 
@@ -409,7 +409,7 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(10, 10);
             panel1.Name = "panel1";
-            panel1.Size = new Size(780, 30);
+            panel1.Size = new Size(782, 30);
             panel1.TabIndex = 0;
             // 
             // label1
@@ -418,7 +418,7 @@
             label1.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.Location = new Point(0, 0);
             label1.Name = "label1";
-            label1.Size = new Size(780, 30);
+            label1.Size = new Size(782, 30);
             label1.TabIndex = 0;
             label1.Text = "Section";
             // 
@@ -426,14 +426,16 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 446);
+            ClientSize = new Size(802, 446);
             ControlBox = false;
             Controls.Add(BodyPanel);
             Controls.Add(FooterPanel);
             Controls.Add(HeaderPanel);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             MaximizeBox = false;
+            MaximumSize = new Size(1500, 464);
             MinimizeBox = false;
+            MinimumSize = new Size(820, 464);
             Name = "EditConfigurationModal";
             ShowIcon = false;
             ShowInTaskbar = false;

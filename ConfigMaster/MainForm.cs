@@ -2,6 +2,7 @@
 using ConfigMaster.ControlConfigurations;
 using ConfigMaster.Modals;
 using MaterialSkin.Controls;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,6 @@ namespace ConfigMaster
         public MainForm(IIniFileService iniFileService, IPathManagerService pathManagerService, IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            InitializeTreeView();
             InitializeContextMenu();
             MaterialSkinTheme materialSkin = new MaterialSkinTheme(this);
             materialSkin.SetTheme();
@@ -44,16 +44,20 @@ namespace ConfigMaster
             _serviceProvider = serviceProvider;
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
         {
-            PopulateTreeview();
+            await PopulateSectionTreeviewAsync();
+        }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
         }
 
-        private void PopulateTreeview()
+        private async Task PopulateSectionTreeviewAsync()
         {
             SectionTreeView.Nodes.Clear();
-            LoadFileAsync().GetAwaiter().GetResult();
-            var sections = _iniFileService.GetSections().GetAwaiter().GetResult();
+            await LoadFileAsync();
+            var sections = await _iniFileService.GetSections();
             foreach (var section in sections)
             {
                 var sectionNode = new TreeNode(section);
@@ -65,71 +69,58 @@ namespace ConfigMaster
             }
         }
 
-        private void InitializeTreeView()
-        {
-            // Set up the TreeView
-            SectionTreeView.DrawMode = TreeViewDrawMode.OwnerDrawAll;
-            SectionTreeView.DrawNode += SectionTreeView_DrawNode;
-            SectionTreeView.ShowLines = false;
-            SectionTreeView.HotTracking = true;
-            SectionTreeView.FullRowSelect = true;
-        }
-
         private void SectionTreeView_DrawNode(object sender, DrawTreeNodeEventArgs e)
         {
-            //// Draw the default node
+            // Draw the default node
             e.DrawDefault = true;
 
             // Custom drawing for selected nodes
             if (e.Node.IsSelected)
             {
-                // Fill the background with white to remove the blue highlight
                 Rectangle customBounds = new Rectangle(e.Bounds.X, e.Bounds.Y, SectionTreeView.Width, e.Bounds.Height);
                 e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(0, 120, 215)), customBounds);
-                // Draw the focus rectangle
                 ControlPaint.DrawFocusRectangle(e.Graphics, customBounds);
             }
         }
 
         private void SectionTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            bool isRightClick = e.Button == MouseButtons.Right;
-            if (!isRightClick)
+            if (e.Button != MouseButtons.Right)
             {
                 SectionTreeView.SelectedNode = e.Node;
                 _selectedSection = e.Node.Tag?.ToString() ?? string.Empty;
-                LoadItems();
+                LoadItemsAsync().ConfigureAwait(false);
             }
         }
 
-        private void LoadItems()
+        private async Task LoadItemsAsync()
         {
             if (string.IsNullOrEmpty(_selectedSection)) return;
 
             SettingsListView.Items.Clear();
             _allItems.Clear();
-            var keyValues = _iniFileService.GetKeyValuePairs(_selectedSection).GetAwaiter().GetResult();
+            var keyValues = await _iniFileService.GetKeyValuePairs(_selectedSection);
 
             foreach (var kvp in keyValues)
             {
-                var item = new ListViewItem(kvp.Key);
-                // Set font size and style to bold for the first column (setting name)
-                item.UseItemStyleForSubItems = true;
-                if (kvp.Key.StartsWith(';'))
-                {
-                    item.Font = new Font("Segoe UI", 10, FontStyle.Strikeout);
-                    item.ForeColor = Color.Gray;
-                }
-                else
-                {
-                    item.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-                }
-                item.SubItems.Add(kvp.Value);
-                item.ImageKey = "repair.png";
+                var item = CreateListViewItem(kvp.Key, kvp.Value);
                 SettingsListView.Items.Add(item);
-                SettingsListView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the ListView control itself uses the same font
                 _allItems.Add((ListViewItem)item.Clone());
             }
+            SettingsListView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the ListView control itself uses the same font
+        }
+
+        private ListViewItem CreateListViewItem(string key, string value)
+        {
+            var item = new ListViewItem(key)
+            {
+                UseItemStyleForSubItems = true,
+                Font = key.StartsWith(';') ? new Font("Segoe UI", 10, FontStyle.Strikeout) : new Font("Segoe UI", 10, FontStyle.Regular),
+                ForeColor = key.StartsWith(';') ? Color.Gray : Color.Black,
+                ImageKey = "repair.png"
+            };
+            item.SubItems.Add(value);
+            return item;
         }
 
         private void SearchTextBox_TextChanged(object sender, EventArgs e)
@@ -147,7 +138,7 @@ namespace ConfigMaster
             }
             else
             {
-                LoadItems();
+                LoadItemsAsync().ConfigureAwait(false);
             }
         }
 
@@ -167,7 +158,7 @@ namespace ConfigMaster
             {
                 MessageBox.Show($"No results found for \"{filterText.Trim()}\"", "Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SettingsListView.Text = string.Empty;
-                LoadItems();
+                LoadItemsAsync().ConfigureAwait(false);
             }
 
             SettingsListView.EndUpdate();
@@ -183,19 +174,88 @@ namespace ConfigMaster
 
             _deleteOption = new ToolStripMenuItem("Delete");
             _deleteOption.Image = imageList1.Images["recycle-bin.png"];
+            _deleteOption.Click += _deleteOption_Click;
             _menuStrip.Items.Add(_deleteOption);
             _menuStrip.Items.Add(new ToolStripSeparator());
 
             _commentOption = new ToolStripMenuItem("Comment");
             _commentOption.Image = imageList1.Images["eraser.png"];
+            _commentOption.Click += _commentOption_Click;
             _menuStrip.Items.Add(_commentOption);
             _menuStrip.Items.Add(new ToolStripSeparator());
 
             _uncommentOption = new ToolStripMenuItem("Uncomment");
             _uncommentOption.Image = imageList1.Images["plus.png"];
+            _uncommentOption.Click += _uncommentOption_Click;
             _menuStrip.Items.Add(_uncommentOption);
 
             SettingsListView.ContextMenuStrip = _menuStrip;
+        }
+
+        private async void _deleteOption_Click(object? sender, EventArgs e)
+        {
+            if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
+            {
+                string section = SectionTreeView.SelectedNode.Tag?.ToString() ?? string.Empty;
+                ListViewItem selectedItem = SettingsListView.SelectedItems[0];
+                string subItemText = selectedItem.SubItems.Count > 1 ? selectedItem.SubItems[1].Text : string.Empty;
+
+                if (MessageBox.Show(
+                        $"Do you want to remove this {selectedItem.Text}={subItemText} setting?",
+                        "Remove Setting",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                { 
+                    var isDeleted = await _iniFileService.DeleteKey(section, selectedItem.Text);
+                    if (isDeleted)
+                    {
+                        SettingsListView.Items.RemoveAt(selectedItem.Index);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to delete the item.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private async void _commentOption_Click(object? sender, EventArgs e)
+        {
+            if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
+            {
+                string section = SectionTreeView.SelectedNode.Tag?.ToString() ?? string.Empty;
+                ListViewItem selectedItem = SettingsListView.SelectedItems[0];
+                string subItemText = selectedItem.SubItems.Count > 1 ? selectedItem.SubItems[1].Text : string.Empty;
+
+                var configurationData = await _iniFileService.GetConfigurationData();
+                var updatedKey = await _iniFileService.CommentKey(configurationData, section, selectedItem.Text);
+                SettingsListView.BeginUpdate();
+                selectedItem.Text = updatedKey.FirstOrDefault().Key;
+                selectedItem.SubItems[1].Text = updatedKey.FirstOrDefault().Value;
+                selectedItem.Font = new Font("Segoe UI", 9f, FontStyle.Strikeout);
+                selectedItem.ForeColor = Color.Gray;
+                SettingsListView.EndUpdate();
+            }
+        }
+
+        private async void _uncommentOption_Click(object? sender, EventArgs e)
+        {
+            if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
+            {
+                string section = SectionTreeView.SelectedNode.Tag?.ToString() ?? string.Empty;
+                ListViewItem selectedItem = SettingsListView.SelectedItems[0];
+                string subItemText = selectedItem.SubItems.Count > 1 ? selectedItem.SubItems[1].Text : string.Empty;
+
+                var configurationData = await _iniFileService.GetConfigurationData();
+                var updatedKey = await _iniFileService.UnCommentKey(configurationData, section, selectedItem.Text);
+                SettingsListView.BeginUpdate();
+                selectedItem.Text = updatedKey.FirstOrDefault().Key;
+                selectedItem.SubItems[1].Text = updatedKey.FirstOrDefault().Value;
+                selectedItem.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+                selectedItem.ForeColor = Color.FromArgb(255, 0, 0, 0);
+                SettingsListView.EndUpdate();
+            }
         }
 
         private void EditMenuItem_Click(object? sender, EventArgs e)
@@ -224,13 +284,13 @@ namespace ConfigMaster
             }
         }
 
-        private void LoadConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void LoadConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (iniBrowser.ShowDialog() == DialogResult.OK)
             {
                 SettingsListView.Items.Clear();
-                _pathManagerService.UpdatePath(iniBrowser.FileName).GetAwaiter().GetResult();
-                PopulateTreeview();
+                await _pathManagerService.UpdatePath(iniBrowser.FileName);
+                await PopulateSectionTreeviewAsync();
             }
         }
 
@@ -245,26 +305,16 @@ namespace ConfigMaster
         {
             if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
             {
-                string section = SectionTreeView.SelectedNode.Tag?.ToString() ?? string.Empty;
                 ListViewItem selectedItem = SettingsListView.SelectedItems[0];
-                string subItemText = selectedItem.SubItems.Count > 1 ? selectedItem.SubItems[1].Text : string.Empty;
 
                 if (e.Button == MouseButtons.Right)
                 {
-                    if (selectedItem.Text.ToString().StartsWith(";") || selectedItem.Text.ToString().StartsWith("#"))
-                    {
-                        _commentOption.Enabled = false;
-                        _uncommentOption.Enabled = true;
-                        _editOption.Enabled = false;
-                        _deleteOption.Enabled = false;
-                    }
-                    else
-                    {
-                        _commentOption.Enabled = true;
-                        _uncommentOption.Enabled = false;
-                        _editOption.Enabled = true;
-                        _deleteOption.Enabled = true;
-                    }
+                    bool isCommented = selectedItem.Text.ToString().StartsWith(";") || selectedItem.Text.ToString().StartsWith("#");
+
+                    _commentOption.Enabled = !isCommented;
+                    _uncommentOption.Enabled = isCommented;
+                    _editOption.Enabled = !isCommented;
+                    _deleteOption.Enabled = !isCommented;
 
                     _menuStrip.Show(SettingsListView, e.Location);
                 }

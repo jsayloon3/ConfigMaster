@@ -1,4 +1,6 @@
-﻿namespace ConfigMaster
+﻿using ConfigMaster.ControlConfigurations;
+
+namespace ConfigMaster
 {
     partial class MainForm
     {
@@ -48,8 +50,21 @@
             HeaderPanel_SearchBoxArea = new Panel();
             SearchTextBox = new MaterialSkin.Controls.MaterialTextBox();
             tabPage2 = new TabPage();
+            panel1 = new Panel();
+            panel6 = new Panel();
+            panel7 = new Panel();
+            materialButton1 = new MaterialSkin.Controls.MaterialButton();
+            panel5 = new Panel();
+            panel4 = new Panel();
+            panel2 = new Panel();
+            panel3 = new Panel();
+            LogoutButton = new MaterialSkin.Controls.MaterialButton();
+            AccountHeaderPanel = new FlowLayoutPanel();
+            AccountGreetingLabel = new MaterialSkin.Controls.MaterialLabel();
+            AccountLeftPanel = new FlowLayoutPanel();
+            AccountRightPanel = new FlowLayoutPanel();
             FooterPanel = new Panel();
-            label1 = new Label();
+            FooterLabel = new Label();
             iniBrowser = new OpenFileDialog();
             Menus.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -62,6 +77,13 @@
             HeaderPanel_ContextMenuArea.SuspendLayout();
             menuStripSetting.SuspendLayout();
             HeaderPanel_SearchBoxArea.SuspendLayout();
+            tabPage2.SuspendLayout();
+            panel1.SuspendLayout();
+            panel6.SuspendLayout();
+            panel7.SuspendLayout();
+            panel2.SuspendLayout();
+            panel3.SuspendLayout();
+            AccountHeaderPanel.SuspendLayout();
             FooterPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -140,19 +162,25 @@
             splitContainer1.Panel2.Controls.Add(SettingsListView);
             splitContainer1.Panel2.RightToLeft = RightToLeft.No;
             splitContainer1.Size = new Size(1157, 568);
-            splitContainer1.SplitterDistance = 299;
+            splitContainer1.SplitterDistance = 248;
             splitContainer1.TabIndex = 0;
             // 
             // SectionTreeView
             // 
             SectionTreeView.Dock = DockStyle.Fill;
+            SectionTreeView.DrawMode = TreeViewDrawMode.OwnerDrawAll;
+            SectionTreeView.FullRowSelect = true;
+            SectionTreeView.HideSelection = false;
+            SectionTreeView.HotTracking = true;
             SectionTreeView.ImageIndex = 12;
             SectionTreeView.ImageList = imageList1;
             SectionTreeView.Location = new Point(0, 0);
             SectionTreeView.Name = "SectionTreeView";
             SectionTreeView.SelectedImageIndex = 13;
-            SectionTreeView.Size = new Size(299, 568);
+            SectionTreeView.ShowLines = false;
+            SectionTreeView.Size = new Size(248, 568);
             SectionTreeView.TabIndex = 0;
+            SectionTreeView.DrawNode += SectionTreeView_DrawNode;
             SectionTreeView.NodeMouseClick += SectionTreeView_NodeMouseClick;
             // 
             // SettingsListView
@@ -169,7 +197,7 @@
             SettingsListView.MultiSelect = false;
             SettingsListView.Name = "SettingsListView";
             SettingsListView.ShowItemToolTips = true;
-            SettingsListView.Size = new Size(854, 568);
+            SettingsListView.Size = new Size(905, 568);
             SettingsListView.SmallImageList = imageList1;
             SettingsListView.TabIndex = 0;
             SettingsListView.UseCompatibleStateImageBehavior = false;
@@ -275,19 +303,169 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(panel1);
+            tabPage2.Controls.Add(AccountHeaderPanel);
+            tabPage2.Controls.Add(AccountLeftPanel);
+            tabPage2.Controls.Add(AccountRightPanel);
             tabPage2.ImageKey = "account.png";
             tabPage2.Location = new Point(4, 29);
             tabPage2.Margin = new Padding(3, 4, 3, 4);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3, 4, 3, 4);
+            tabPage2.Padding = new Padding(3, 50, 3, 3);
             tabPage2.Size = new Size(1163, 628);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Account";
-            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(panel6);
+            panel1.Controls.Add(panel5);
+            panel1.Controls.Add(panel4);
+            panel1.Controls.Add(panel2);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(283, 86);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(597, 539);
+            panel1.TabIndex = 3;
+            // 
+            // panel6
+            // 
+            panel6.Controls.Add(panel7);
+            panel6.Dock = DockStyle.Fill;
+            panel6.Location = new Point(192, 0);
+            panel6.Name = "panel6";
+            panel6.Padding = new Padding(0, 20, 0, 20);
+            panel6.Size = new Size(211, 488);
+            panel6.TabIndex = 3;
+            // 
+            // panel7
+            // 
+            panel7.Controls.Add(materialButton1);
+            panel7.Dock = DockStyle.Top;
+            panel7.Location = new Point(0, 20);
+            panel7.Name = "panel7";
+            panel7.Padding = new Padding(15, 5, 15, 5);
+            panel7.Size = new Size(211, 44);
+            panel7.TabIndex = 0;
+            // 
+            // materialButton1
+            // 
+            materialButton1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            materialButton1.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            materialButton1.Depth = 0;
+            materialButton1.Dock = DockStyle.Fill;
+            materialButton1.HighEmphasis = true;
+            materialButton1.Icon = null;
+            materialButton1.Location = new Point(15, 5);
+            materialButton1.Margin = new Padding(4, 6, 4, 6);
+            materialButton1.MouseState = MaterialSkin.MouseState.HOVER;
+            materialButton1.Name = "materialButton1";
+            materialButton1.NoAccentTextColor = Color.Empty;
+            materialButton1.Size = new Size(181, 34);
+            materialButton1.TabIndex = 0;
+            materialButton1.Text = "View Logs";
+            materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
+            materialButton1.UseAccentColor = false;
+            materialButton1.UseVisualStyleBackColor = true;
+            // 
+            // panel5
+            // 
+            panel5.Dock = DockStyle.Right;
+            panel5.Location = new Point(403, 0);
+            panel5.Name = "panel5";
+            panel5.Size = new Size(192, 488);
+            panel5.TabIndex = 2;
+            // 
+            // panel4
+            // 
+            panel4.Dock = DockStyle.Left;
+            panel4.Location = new Point(0, 0);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(192, 488);
+            panel4.TabIndex = 1;
+            // 
+            // panel2
+            // 
+            panel2.Controls.Add(panel3);
+            panel2.Dock = DockStyle.Bottom;
+            panel2.Location = new Point(0, 488);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(595, 49);
+            panel2.TabIndex = 0;
+            // 
+            // panel3
+            // 
+            panel3.Controls.Add(LogoutButton);
+            panel3.Dock = DockStyle.Right;
+            panel3.Location = new Point(444, 0);
+            panel3.Name = "panel3";
+            panel3.Padding = new Padding(5);
+            panel3.Size = new Size(151, 49);
+            panel3.TabIndex = 0;
+            // 
+            // LogoutButton
+            // 
+            LogoutButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            LogoutButton.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            LogoutButton.Depth = 0;
+            LogoutButton.Dock = DockStyle.Fill;
+            LogoutButton.HighEmphasis = true;
+            LogoutButton.Icon = null;
+            LogoutButton.Location = new Point(5, 5);
+            LogoutButton.Margin = new Padding(4, 6, 4, 6);
+            LogoutButton.MouseState = MaterialSkin.MouseState.HOVER;
+            LogoutButton.Name = "LogoutButton";
+            LogoutButton.NoAccentTextColor = Color.Empty;
+            LogoutButton.Size = new Size(141, 39);
+            LogoutButton.TabIndex = 0;
+            LogoutButton.Text = "Logout";
+            LogoutButton.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
+            LogoutButton.UseAccentColor = false;
+            LogoutButton.UseVisualStyleBackColor = true;
+            // 
+            // AccountHeaderPanel
+            // 
+            AccountHeaderPanel.Controls.Add(AccountGreetingLabel);
+            AccountHeaderPanel.Dock = DockStyle.Top;
+            AccountHeaderPanel.Location = new Point(283, 50);
+            AccountHeaderPanel.Name = "AccountHeaderPanel";
+            AccountHeaderPanel.Size = new Size(597, 36);
+            AccountHeaderPanel.TabIndex = 2;
+            // 
+            // AccountGreetingLabel
+            // 
+            AccountGreetingLabel.AutoSize = true;
+            AccountGreetingLabel.Depth = 0;
+            AccountGreetingLabel.Dock = DockStyle.Fill;
+            AccountGreetingLabel.Font = new Font("Roboto", 24F, FontStyle.Bold, GraphicsUnit.Pixel);
+            AccountGreetingLabel.FontType = MaterialSkin.MaterialSkinManager.fontType.H5;
+            AccountGreetingLabel.Location = new Point(3, 0);
+            AccountGreetingLabel.MouseState = MaterialSkin.MouseState.HOVER;
+            AccountGreetingLabel.Name = "AccountGreetingLabel";
+            AccountGreetingLabel.Size = new Size(178, 29);
+            AccountGreetingLabel.TabIndex = 0;
+            AccountGreetingLabel.Text = "Good Afternoon!";
+            // 
+            // AccountLeftPanel
+            // 
+            AccountLeftPanel.Dock = DockStyle.Left;
+            AccountLeftPanel.Location = new Point(3, 50);
+            AccountLeftPanel.Name = "AccountLeftPanel";
+            AccountLeftPanel.Size = new Size(280, 575);
+            AccountLeftPanel.TabIndex = 1;
+            // 
+            // AccountRightPanel
+            // 
+            AccountRightPanel.Dock = DockStyle.Right;
+            AccountRightPanel.Location = new Point(880, 50);
+            AccountRightPanel.Name = "AccountRightPanel";
+            AccountRightPanel.Size = new Size(280, 575);
+            AccountRightPanel.TabIndex = 0;
             // 
             // FooterPanel
             // 
-            FooterPanel.Controls.Add(label1);
+            FooterPanel.Controls.Add(FooterLabel);
             FooterPanel.Dock = DockStyle.Bottom;
             FooterPanel.Location = new Point(3, 725);
             FooterPanel.Name = "FooterPanel";
@@ -295,17 +473,16 @@
             FooterPanel.Size = new Size(1171, 22);
             FooterPanel.TabIndex = 1;
             // 
-            // label1
+            // FooterLabel
             // 
-            label1.AutoSize = true;
-            label1.BackColor = Color.DodgerBlue;
-            label1.Dock = DockStyle.Right;
-            label1.ForeColor = Color.RoyalBlue;
-            label1.Location = new Point(1091, 3);
-            label1.Name = "label1";
-            label1.Size = new Size(77, 20);
-            label1.TabIndex = 1;
-            label1.Text = "Build 1.0.1";
+            FooterLabel.AutoSize = true;
+            FooterLabel.Dock = DockStyle.Right;
+            FooterLabel.ForeColor = Color.Black;
+            FooterLabel.Location = new Point(1091, 3);
+            FooterLabel.Name = "FooterLabel";
+            FooterLabel.Size = new Size(77, 20);
+            FooterLabel.TabIndex = 0;
+            FooterLabel.Text = "Build 1.0.1";
             // 
             // iniBrowser
             // 
@@ -324,11 +501,13 @@
             DrawerUseColors = true;
             MainMenuStrip = menuStripSetting;
             Margin = new Padding(3, 4, 3, 4);
+            MinimumSize = new Size(1177, 751);
             Name = "MainForm";
             Padding = new Padding(3, 64, 3, 4);
             RightToLeft = RightToLeft.No;
             Text = "Config Master";
             WindowState = FormWindowState.Maximized;
+            FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             Menus.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
@@ -343,6 +522,16 @@
             menuStripSetting.ResumeLayout(false);
             menuStripSetting.PerformLayout();
             HeaderPanel_SearchBoxArea.ResumeLayout(false);
+            tabPage2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel6.ResumeLayout(false);
+            panel7.ResumeLayout(false);
+            panel7.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel3.ResumeLayout(false);
+            panel3.PerformLayout();
+            AccountHeaderPanel.ResumeLayout(false);
+            AccountHeaderPanel.PerformLayout();
             FooterPanel.ResumeLayout(false);
             FooterPanel.PerformLayout();
             ResumeLayout(false);
@@ -366,9 +555,22 @@
         private TreeView SectionTreeView;
         private ListView SettingsListView;
         private OpenFileDialog iniBrowser;
-        private Label label1;
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader2;
         private ContextMenuStrip contextMenuStripListView;
+        private Label FooterLabel;
+        private FlowLayoutPanel AccountRightPanel;
+        private FlowLayoutPanel AccountLeftPanel;
+        private FlowLayoutPanel AccountHeaderPanel;
+        private MaterialSkin.Controls.MaterialLabel AccountGreetingLabel;
+        private Panel panel1;
+        private Panel panel2;
+        private Panel panel3;
+        private MaterialSkin.Controls.MaterialButton LogoutButton;
+        private Panel panel6;
+        private Panel panel7;
+        private Panel panel5;
+        private Panel panel4;
+        private MaterialSkin.Controls.MaterialButton materialButton1;
     }
 }

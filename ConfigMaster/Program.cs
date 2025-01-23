@@ -37,7 +37,7 @@ namespace ConfigMaster
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                        {"ConnectionStrings:SQLite", $"Data Source={dbFile}"}
+                    {"ConnectionStrings:SQLite", $"Data Source={dbFile}"}
                 })
                 .Build();
 
