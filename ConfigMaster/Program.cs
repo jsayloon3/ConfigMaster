@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ConfigMaster
@@ -22,7 +24,7 @@ namespace ConfigMaster
         /// </summary>
         [STAThread]
         static void Main(string[] args)
-        { 
+        {
             MainAsync(args).GetAwaiter().GetResult();
         }
 
@@ -37,9 +39,19 @@ namespace ConfigMaster
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    {"ConnectionStrings:SQLite", $"Data Source={dbFile}"}
+                        {"ConnectionStrings:SQLite", $"Data Source={dbFile}"}
                 })
                 .Build();
+
+            // Configure Serilog
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File(
+                    Path.Combine(AppContext.BaseDirectory, "logs", "applicationlog.log"), 
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 15
+                )
+                .CreateLogger();
 
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
@@ -49,7 +61,7 @@ namespace ConfigMaster
             ServiceProvider = host.Services;
 
             using (var scope = ServiceProvider.CreateScope())
-            { 
+            {
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 if (context.Database.GetPendingMigrations().Any())
                 {
@@ -57,15 +69,19 @@ namespace ConfigMaster
                 }
 
                 var config = scope.ServiceProvider.GetRequiredService<AddDefaultConfigurationPath>();
-                if (config.IsPathEmpty().Result) await config.AddDefaultPath(); 
+                if (config.IsPathEmpty().Result) await config.AddDefaultPath();
+
+                var loginUsers = scope.ServiceProvider.GetRequiredService<AddDefaultUsers>();
+                if (!loginUsers.HasUser().Result) await loginUsers.Register();
             }
-                
+
             Application.Run(ServiceProvider.GetRequiredService<MainForm>());
         }
 
         static IHostBuilder CreateBuilder()
         {
             return Host.CreateDefaultBuilder()
+                .UseSerilog() // Use Serilog for logging
                 .ConfigureServices((context, services) =>
                 {
                     // Add Configuration
@@ -80,13 +96,18 @@ namespace ConfigMaster
                     // Add Repositories
                     services.AddScoped<IPathManagerRepository, PathManagerRepository>();
                     services.AddScoped<IIniFileRepository, IniFileRepository>();
+                    services.AddScoped<IAuditTrailManagerRepository, AuditTrailManagerRepository>();
+                    services.AddScoped<IUserRepository, UserRepository>();
 
                     // Add Services
                     services.AddScoped<IIniFileService, IniFileService>();
                     services.AddScoped<IPathManagerService, PathManagerService>();
+                    services.AddScoped<IAuthService, AuthService>();
+                    services.AddScoped<IUserManagerService, UserManagerService>();
 
                     // Add Defaults
                     services.AddScoped<AddDefaultConfigurationPath>();
+                    services.AddScoped<AddDefaultUsers>();
 
                     // Add Forms
                     services.AddTransient<MainForm>();

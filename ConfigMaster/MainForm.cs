@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Collections.Specialized.BitVector32;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ConfigMaster
@@ -206,7 +207,14 @@ namespace ConfigMaster
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning,
                         MessageBoxDefaultButton.Button1) == DialogResult.Yes)
-                { 
+                {
+                    if (selectedItem.Text.StartsWith(";") || selectedItem.Text.StartsWith("#"))
+                    {
+                        var configurationData = await _iniFileService.GetConfigurationData();
+                        await _iniFileService.UnCommentKey(configurationData, section, selectedItem.Text);
+                        selectedItem.Text = selectedItem.Text.Substring(1);
+                    }
+
                     var isDeleted = await _iniFileService.DeleteKey(section, selectedItem.Text);
                     if (isDeleted)
                     {
@@ -266,9 +274,17 @@ namespace ConfigMaster
                 ListViewItem selectedItem = SettingsListView.SelectedItems[0];
                 string subItemText = selectedItem.SubItems.Count > 1 ? selectedItem.SubItems[1].Text : string.Empty;
 
-                var showModal = _serviceProvider.GetRequiredService<EditConfigurationModal>();
-                showModal.Initialize(title: "Update Setting", isAdd: false, sections: null, section, selectedItem.Text, subItemText);
-                showModal.ShowDialog();
+                var edditSetting = _serviceProvider.GetRequiredService<EditConfigurationModal>();
+                edditSetting.Initialize(title: "Update Setting", isAdd: false, isEdit: true, section, selectedItem.Text, subItemText);
+                edditSetting.ShowDialog();
+
+                if (edditSetting.IsUpdated)
+                {
+                    SettingsListView.BeginUpdate();
+                    selectedItem.Text = edditSetting.GetResponseSettingName;
+                    selectedItem.SubItems[1].Text = edditSetting.GetResponseSettingValue;
+                    SettingsListView.EndUpdate();
+                }
             }
         }
 
@@ -296,9 +312,30 @@ namespace ConfigMaster
 
         private void AddNewSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var showModal = _serviceProvider.GetRequiredService<EditConfigurationModal>();
-            showModal.Initialize(title: "New Setting", isAdd: true, sections: _iniFileService.GetSections().GetAwaiter().GetResult());
-            showModal.ShowDialog();
+            var addSetting = _serviceProvider.GetRequiredService<EditConfigurationModal>();
+            addSetting.Initialize(title: "New Setting", isAdd: true, isEdit: false);
+            addSetting.ShowDialog();
+
+            if (addSetting.IsUpdated)
+            {
+                if (!addSetting.IsSettingAddedOnExistingSection)
+                {
+                    var sectionNode = new TreeNode(addSetting.GetResponseSectionName);
+                    sectionNode.Tag = addSetting.GetResponseSectionName;
+                    sectionNode.NodeFont = new Font("Segoe UI", 10, FontStyle.Bold);
+                    SectionTreeView.Nodes.Add(sectionNode);
+                    sectionNode.Text = sectionNode.Text;
+                    SectionTreeView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the TreeView control itself uses the same font
+                }
+
+                if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
+                { 
+                    SettingsListView.BeginUpdate();
+                    var item = CreateListViewItem(addSetting.GetResponseSettingName, addSetting.GetResponseSettingValue);
+                    SettingsListView.Items.Add(item);
+                    SettingsListView.EndUpdate();
+                }
+            }
         }
 
         private void SettingsListView_MouseClick(object sender, MouseEventArgs e)
@@ -314,7 +351,7 @@ namespace ConfigMaster
                     _commentOption.Enabled = !isCommented;
                     _uncommentOption.Enabled = isCommented;
                     _editOption.Enabled = !isCommented;
-                    _deleteOption.Enabled = !isCommented;
+                    _deleteOption.Enabled = true;
 
                     _menuStrip.Show(SettingsListView, e.Location);
                 }

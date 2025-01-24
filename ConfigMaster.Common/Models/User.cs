@@ -14,5 +14,6 @@ namespace ConfigMaster.Common.Models
         public string PasswordSalt { get; set; } = string.Empty;
         public int RoleId { get; set; }
         public Role? Role { get; set; }
+        public DateTime UserRegistered { get; set; }
     }
 }

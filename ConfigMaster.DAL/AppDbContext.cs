@@ -12,6 +12,7 @@ namespace ConfigMaster.DAL
         public DbSet<PathInfo> PathInfo { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,16 +42,6 @@ namespace ConfigMaster.DAL
                     RoleDescription = "Tech Support Role"
                 }
             );
-
-            //modelBuilder.Entity<PathInfo>().HasData(
-            //    new PathInfo
-            //    {
-            //        Id = 1,
-            //        Path = @"C:\BarterCX",
-            //        CreatedAt = DateTime.Now,
-            //        UpdatedAt = DateTime.Now
-            //    }
-            //);
         }
     }
 }
