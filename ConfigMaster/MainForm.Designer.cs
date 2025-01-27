@@ -47,6 +47,10 @@ namespace ConfigMaster
             menuStripSetting = new MenuStrip();
             loadConfigurationToolStripMenuItem = new ToolStripMenuItem();
             addNewSettingToolStripMenuItem = new ToolStripMenuItem();
+            addNewSettingToolStripMenuItem1 = new ToolStripMenuItem();
+            importToolStripMenuItem = new ToolStripMenuItem();
+            readOnlySettingsToolStripMenuItem = new ToolStripMenuItem();
+            exportAuditLogsToolStripMenuItem = new ToolStripMenuItem();
             HeaderPanel_SearchBoxArea = new Panel();
             SearchTextBox = new MaterialSkin.Controls.MaterialTextBox();
             tabPage2 = new TabPage();
@@ -64,7 +68,8 @@ namespace ConfigMaster
             AccountLeftPanel = new FlowLayoutPanel();
             AccountRightPanel = new FlowLayoutPanel();
             FooterPanel = new Panel();
-            FooterLabel = new Label();
+            panel8 = new Panel();
+            LockButton = new MaterialSkin.Controls.MaterialButton();
             iniBrowser = new OpenFileDialog();
             Menus.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -85,6 +90,7 @@ namespace ConfigMaster
             panel3.SuspendLayout();
             AccountHeaderPanel.SuspendLayout();
             FooterPanel.SuspendLayout();
+            panel8.SuspendLayout();
             SuspendLayout();
             // 
             // imageList1
@@ -120,7 +126,7 @@ namespace ConfigMaster
             Menus.Multiline = true;
             Menus.Name = "Menus";
             Menus.SelectedIndex = 0;
-            Menus.Size = new Size(1171, 661);
+            Menus.Size = new Size(1171, 648);
             Menus.TabIndex = 0;
             // 
             // tabPage1
@@ -132,7 +138,7 @@ namespace ConfigMaster
             tabPage1.Margin = new Padding(3, 4, 3, 4);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3, 4, 3, 4);
-            tabPage1.Size = new Size(1163, 628);
+            tabPage1.Size = new Size(1163, 615);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Home";
             tabPage1.UseVisualStyleBackColor = true;
@@ -143,7 +149,7 @@ namespace ConfigMaster
             BodyPanel.Dock = DockStyle.Fill;
             BodyPanel.Location = new Point(3, 56);
             BodyPanel.Name = "BodyPanel";
-            BodyPanel.Size = new Size(1157, 568);
+            BodyPanel.Size = new Size(1157, 555);
             BodyPanel.TabIndex = 2;
             // 
             // splitContainer1
@@ -161,7 +167,7 @@ namespace ConfigMaster
             // 
             splitContainer1.Panel2.Controls.Add(SettingsListView);
             splitContainer1.Panel2.RightToLeft = RightToLeft.No;
-            splitContainer1.Size = new Size(1157, 568);
+            splitContainer1.Size = new Size(1157, 555);
             splitContainer1.SplitterDistance = 248;
             splitContainer1.TabIndex = 0;
             // 
@@ -178,7 +184,7 @@ namespace ConfigMaster
             SectionTreeView.Name = "SectionTreeView";
             SectionTreeView.SelectedImageIndex = 13;
             SectionTreeView.ShowLines = false;
-            SectionTreeView.Size = new Size(248, 568);
+            SectionTreeView.Size = new Size(248, 555);
             SectionTreeView.TabIndex = 0;
             SectionTreeView.DrawNode += SectionTreeView_DrawNode;
             SectionTreeView.NodeMouseClick += SectionTreeView_NodeMouseClick;
@@ -197,7 +203,7 @@ namespace ConfigMaster
             SettingsListView.MultiSelect = false;
             SettingsListView.Name = "SettingsListView";
             SettingsListView.ShowItemToolTips = true;
-            SettingsListView.Size = new Size(905, 568);
+            SettingsListView.Size = new Size(905, 555);
             SettingsListView.SmallImageList = imageList1;
             SettingsListView.TabIndex = 0;
             SettingsListView.UseCompatibleStateImageBehavior = false;
@@ -263,11 +269,43 @@ namespace ConfigMaster
             // 
             // addNewSettingToolStripMenuItem
             // 
+            addNewSettingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addNewSettingToolStripMenuItem1, importToolStripMenuItem, exportAuditLogsToolStripMenuItem });
             addNewSettingToolStripMenuItem.Image = (Image)resources.GetObject("addNewSettingToolStripMenuItem.Image");
             addNewSettingToolStripMenuItem.Name = "addNewSettingToolStripMenuItem";
-            addNewSettingToolStripMenuItem.Size = new Size(156, 44);
-            addNewSettingToolStripMenuItem.Text = "Add New Setting";
+            addNewSettingToolStripMenuItem.Size = new Size(66, 44);
+            addNewSettingToolStripMenuItem.Text = "File";
             addNewSettingToolStripMenuItem.Click += AddNewSettingToolStripMenuItem_Click;
+            // 
+            // addNewSettingToolStripMenuItem1
+            // 
+            addNewSettingToolStripMenuItem1.Image = (Image)resources.GetObject("addNewSettingToolStripMenuItem1.Image");
+            addNewSettingToolStripMenuItem1.Name = "addNewSettingToolStripMenuItem1";
+            addNewSettingToolStripMenuItem1.Size = new Size(224, 26);
+            addNewSettingToolStripMenuItem1.Text = "Add New Setting";
+            addNewSettingToolStripMenuItem1.Click += addNewSettingToolStripMenuItem1_Click;
+            // 
+            // importToolStripMenuItem
+            // 
+            importToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { readOnlySettingsToolStripMenuItem });
+            importToolStripMenuItem.Image = (Image)resources.GetObject("importToolStripMenuItem.Image");
+            importToolStripMenuItem.Name = "importToolStripMenuItem";
+            importToolStripMenuItem.Size = new Size(224, 26);
+            importToolStripMenuItem.Text = "Import Scripts";
+            importToolStripMenuItem.Click += importToolStripMenuItem_Click;
+            // 
+            // readOnlySettingsToolStripMenuItem
+            // 
+            readOnlySettingsToolStripMenuItem.Image = (Image)resources.GetObject("readOnlySettingsToolStripMenuItem.Image");
+            readOnlySettingsToolStripMenuItem.Name = "readOnlySettingsToolStripMenuItem";
+            readOnlySettingsToolStripMenuItem.Size = new Size(288, 26);
+            readOnlySettingsToolStripMenuItem.Text = "Configure Read-Only Settings";
+            // 
+            // exportAuditLogsToolStripMenuItem
+            // 
+            exportAuditLogsToolStripMenuItem.Image = (Image)resources.GetObject("exportAuditLogsToolStripMenuItem.Image");
+            exportAuditLogsToolStripMenuItem.Name = "exportAuditLogsToolStripMenuItem";
+            exportAuditLogsToolStripMenuItem.Size = new Size(224, 26);
+            exportAuditLogsToolStripMenuItem.Text = "Export Audit Logs";
             // 
             // HeaderPanel_SearchBoxArea
             // 
@@ -312,7 +350,7 @@ namespace ConfigMaster
             tabPage2.Margin = new Padding(3, 4, 3, 4);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3, 50, 3, 3);
-            tabPage2.Size = new Size(1163, 628);
+            tabPage2.Size = new Size(1163, 615);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Account";
             // 
@@ -326,7 +364,7 @@ namespace ConfigMaster
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(283, 86);
             panel1.Name = "panel1";
-            panel1.Size = new Size(597, 539);
+            panel1.Size = new Size(597, 526);
             panel1.TabIndex = 3;
             // 
             // panel6
@@ -336,7 +374,7 @@ namespace ConfigMaster
             panel6.Location = new Point(192, 0);
             panel6.Name = "panel6";
             panel6.Padding = new Padding(0, 20, 0, 20);
-            panel6.Size = new Size(211, 488);
+            panel6.Size = new Size(211, 475);
             panel6.TabIndex = 3;
             // 
             // panel7
@@ -374,7 +412,7 @@ namespace ConfigMaster
             panel5.Dock = DockStyle.Right;
             panel5.Location = new Point(403, 0);
             panel5.Name = "panel5";
-            panel5.Size = new Size(192, 488);
+            panel5.Size = new Size(192, 475);
             panel5.TabIndex = 2;
             // 
             // panel4
@@ -382,14 +420,14 @@ namespace ConfigMaster
             panel4.Dock = DockStyle.Left;
             panel4.Location = new Point(0, 0);
             panel4.Name = "panel4";
-            panel4.Size = new Size(192, 488);
+            panel4.Size = new Size(192, 475);
             panel4.TabIndex = 1;
             // 
             // panel2
             // 
             panel2.Controls.Add(panel3);
             panel2.Dock = DockStyle.Bottom;
-            panel2.Location = new Point(0, 488);
+            panel2.Location = new Point(0, 475);
             panel2.Name = "panel2";
             panel2.Size = new Size(595, 49);
             panel2.TabIndex = 0;
@@ -452,7 +490,7 @@ namespace ConfigMaster
             AccountLeftPanel.Dock = DockStyle.Left;
             AccountLeftPanel.Location = new Point(3, 50);
             AccountLeftPanel.Name = "AccountLeftPanel";
-            AccountLeftPanel.Size = new Size(280, 575);
+            AccountLeftPanel.Size = new Size(280, 562);
             AccountLeftPanel.TabIndex = 1;
             // 
             // AccountRightPanel
@@ -460,29 +498,47 @@ namespace ConfigMaster
             AccountRightPanel.Dock = DockStyle.Right;
             AccountRightPanel.Location = new Point(880, 50);
             AccountRightPanel.Name = "AccountRightPanel";
-            AccountRightPanel.Size = new Size(280, 575);
+            AccountRightPanel.Size = new Size(280, 562);
             AccountRightPanel.TabIndex = 0;
             // 
             // FooterPanel
             // 
-            FooterPanel.Controls.Add(FooterLabel);
+            FooterPanel.Controls.Add(panel8);
             FooterPanel.Dock = DockStyle.Bottom;
-            FooterPanel.Location = new Point(3, 725);
+            FooterPanel.Location = new Point(3, 712);
             FooterPanel.Name = "FooterPanel";
             FooterPanel.Padding = new Padding(3, 3, 3, 6);
-            FooterPanel.Size = new Size(1171, 22);
+            FooterPanel.Size = new Size(1171, 35);
             FooterPanel.TabIndex = 1;
             // 
-            // FooterLabel
+            // panel8
             // 
-            FooterLabel.AutoSize = true;
-            FooterLabel.Dock = DockStyle.Right;
-            FooterLabel.ForeColor = Color.Black;
-            FooterLabel.Location = new Point(1091, 3);
-            FooterLabel.Name = "FooterLabel";
-            FooterLabel.Size = new Size(77, 20);
-            FooterLabel.TabIndex = 0;
-            FooterLabel.Text = "Build 1.0.1";
+            panel8.Controls.Add(LockButton);
+            panel8.Dock = DockStyle.Right;
+            panel8.Location = new Point(1064, 3);
+            panel8.Name = "panel8";
+            panel8.Size = new Size(104, 26);
+            panel8.TabIndex = 0;
+            // 
+            // LockButton
+            // 
+            LockButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            LockButton.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            LockButton.Depth = 0;
+            LockButton.Dock = DockStyle.Fill;
+            LockButton.HighEmphasis = true;
+            LockButton.Icon = (Image)resources.GetObject("LockButton.Icon");
+            LockButton.Location = new Point(0, 0);
+            LockButton.Margin = new Padding(4, 6, 4, 6);
+            LockButton.MouseState = MaterialSkin.MouseState.HOVER;
+            LockButton.Name = "LockButton";
+            LockButton.NoAccentTextColor = Color.Empty;
+            LockButton.Size = new Size(104, 26);
+            LockButton.TabIndex = 0;
+            LockButton.Text = "Lock";
+            LockButton.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
+            LockButton.UseAccentColor = false;
+            LockButton.UseVisualStyleBackColor = true;
             // 
             // iniBrowser
             // 
@@ -497,8 +553,8 @@ namespace ConfigMaster
             Controls.Add(Menus);
             Controls.Add(FooterPanel);
             DrawerIndicatorWidth = 5;
-            DrawerTabControl = Menus;
             DrawerUseColors = true;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStripSetting;
             Margin = new Padding(3, 4, 3, 4);
             MinimumSize = new Size(1177, 751);
@@ -533,7 +589,8 @@ namespace ConfigMaster
             AccountHeaderPanel.ResumeLayout(false);
             AccountHeaderPanel.PerformLayout();
             FooterPanel.ResumeLayout(false);
-            FooterPanel.PerformLayout();
+            panel8.ResumeLayout(false);
+            panel8.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -558,7 +615,6 @@ namespace ConfigMaster
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader2;
         private ContextMenuStrip contextMenuStripListView;
-        private Label FooterLabel;
         private FlowLayoutPanel AccountRightPanel;
         private FlowLayoutPanel AccountLeftPanel;
         private FlowLayoutPanel AccountHeaderPanel;
@@ -572,5 +628,11 @@ namespace ConfigMaster
         private Panel panel5;
         private Panel panel4;
         private MaterialSkin.Controls.MaterialButton materialButton1;
+        private Panel panel8;
+        private MaterialSkin.Controls.MaterialButton LockButton;
+        private ToolStripMenuItem addNewSettingToolStripMenuItem1;
+        private ToolStripMenuItem importToolStripMenuItem;
+        private ToolStripMenuItem exportAuditLogsToolStripMenuItem;
+        private ToolStripMenuItem readOnlySettingsToolStripMenuItem;
     }
 }

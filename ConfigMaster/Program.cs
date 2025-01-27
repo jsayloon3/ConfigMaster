@@ -111,6 +111,7 @@ namespace ConfigMaster
 
                     // Add Forms
                     services.AddTransient<MainForm>();
+                    services.AddTransient<AuthForm>();
                     services.AddTransient<EditConfigurationModal>();
                 });
         }

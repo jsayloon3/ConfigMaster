@@ -312,30 +312,7 @@ namespace ConfigMaster
 
         private void AddNewSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var addSetting = _serviceProvider.GetRequiredService<EditConfigurationModal>();
-            addSetting.Initialize(title: "New Setting", isAdd: true, isEdit: false);
-            addSetting.ShowDialog();
-
-            if (addSetting.IsUpdated)
-            {
-                if (!addSetting.IsSettingAddedOnExistingSection)
-                {
-                    var sectionNode = new TreeNode(addSetting.GetResponseSectionName);
-                    sectionNode.Tag = addSetting.GetResponseSectionName;
-                    sectionNode.NodeFont = new Font("Segoe UI", 10, FontStyle.Bold);
-                    SectionTreeView.Nodes.Add(sectionNode);
-                    sectionNode.Text = sectionNode.Text;
-                    SectionTreeView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the TreeView control itself uses the same font
-                }
-
-                if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
-                { 
-                    SettingsListView.BeginUpdate();
-                    var item = CreateListViewItem(addSetting.GetResponseSettingName, addSetting.GetResponseSettingValue);
-                    SettingsListView.Items.Add(item);
-                    SettingsListView.EndUpdate();
-                }
-            }
+           
         }
 
         private void SettingsListView_MouseClick(object sender, MouseEventArgs e)
@@ -354,6 +331,39 @@ namespace ConfigMaster
                     _deleteOption.Enabled = true;
 
                     _menuStrip.Show(SettingsListView, e.Location);
+                }
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addNewSettingToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var addSetting = _serviceProvider.GetRequiredService<EditConfigurationModal>();
+            addSetting.Initialize(title: "New Setting", isAdd: true, isEdit: false);
+            addSetting.ShowDialog();
+
+            if (addSetting.IsUpdated)
+            {
+                if (!addSetting.IsSettingAddedOnExistingSection)
+                {
+                    var sectionNode = new TreeNode(addSetting.GetResponseSectionName);
+                    sectionNode.Tag = addSetting.GetResponseSectionName;
+                    sectionNode.NodeFont = new Font("Segoe UI", 10, FontStyle.Bold);
+                    SectionTreeView.Nodes.Add(sectionNode);
+                    sectionNode.Text = sectionNode.Text;
+                    SectionTreeView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the TreeView control itself uses the same font
+                }
+
+                if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
+                {
+                    SettingsListView.BeginUpdate();
+                    var item = CreateListViewItem(addSetting.GetResponseSettingName, addSetting.GetResponseSettingValue);
+                    SettingsListView.Items.Add(item);
+                    SettingsListView.EndUpdate();
                 }
             }
         }
