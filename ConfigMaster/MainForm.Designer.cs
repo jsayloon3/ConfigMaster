@@ -37,7 +37,10 @@ namespace ConfigMaster
             tabPage1 = new TabPage();
             BodyPanel = new Panel();
             splitContainer1 = new SplitContainer();
+            SectionTreeViewPanel = new Panel();
             SectionTreeView = new TreeView();
+            SectionTitlePanel = new Panel();
+            FilenameLabel = new Label();
             SettingsListView = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
@@ -48,8 +51,7 @@ namespace ConfigMaster
             loadConfigurationToolStripMenuItem = new ToolStripMenuItem();
             addNewSettingToolStripMenuItem = new ToolStripMenuItem();
             addNewSettingToolStripMenuItem1 = new ToolStripMenuItem();
-            importToolStripMenuItem = new ToolStripMenuItem();
-            readOnlySettingsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripTextBox1 = new ToolStripMenuItem();
             exportAuditLogsToolStripMenuItem = new ToolStripMenuItem();
             HeaderPanel_SearchBoxArea = new Panel();
             SearchTextBox = new MaterialSkin.Controls.MaterialTextBox();
@@ -78,6 +80,8 @@ namespace ConfigMaster
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            SectionTreeViewPanel.SuspendLayout();
+            SectionTitlePanel.SuspendLayout();
             HeaderPanel.SuspendLayout();
             HeaderPanel_ContextMenuArea.SuspendLayout();
             menuStripSetting.SuspendLayout();
@@ -160,7 +164,8 @@ namespace ConfigMaster
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(SectionTreeView);
+            splitContainer1.Panel1.Controls.Add(SectionTreeViewPanel);
+            splitContainer1.Panel1.Controls.Add(SectionTitlePanel);
             splitContainer1.Panel1.RightToLeft = RightToLeft.No;
             // 
             // splitContainer1.Panel2
@@ -170,6 +175,15 @@ namespace ConfigMaster
             splitContainer1.Size = new Size(1157, 555);
             splitContainer1.SplitterDistance = 248;
             splitContainer1.TabIndex = 0;
+            // 
+            // SectionTreeViewPanel
+            // 
+            SectionTreeViewPanel.Controls.Add(SectionTreeView);
+            SectionTreeViewPanel.Dock = DockStyle.Fill;
+            SectionTreeViewPanel.Location = new Point(0, 32);
+            SectionTreeViewPanel.Name = "SectionTreeViewPanel";
+            SectionTreeViewPanel.Size = new Size(248, 523);
+            SectionTreeViewPanel.TabIndex = 1;
             // 
             // SectionTreeView
             // 
@@ -184,10 +198,32 @@ namespace ConfigMaster
             SectionTreeView.Name = "SectionTreeView";
             SectionTreeView.SelectedImageIndex = 13;
             SectionTreeView.ShowLines = false;
-            SectionTreeView.Size = new Size(248, 555);
+            SectionTreeView.Size = new Size(248, 523);
             SectionTreeView.TabIndex = 0;
             SectionTreeView.DrawNode += SectionTreeView_DrawNode;
             SectionTreeView.NodeMouseClick += SectionTreeView_NodeMouseClick;
+            // 
+            // SectionTitlePanel
+            // 
+            SectionTitlePanel.BorderStyle = BorderStyle.FixedSingle;
+            SectionTitlePanel.Controls.Add(FilenameLabel);
+            SectionTitlePanel.Dock = DockStyle.Top;
+            SectionTitlePanel.Location = new Point(0, 0);
+            SectionTitlePanel.Name = "SectionTitlePanel";
+            SectionTitlePanel.Padding = new Padding(0, 3, 0, 3);
+            SectionTitlePanel.Size = new Size(248, 32);
+            SectionTitlePanel.TabIndex = 0;
+            // 
+            // FilenameLabel
+            // 
+            FilenameLabel.AutoSize = true;
+            FilenameLabel.Dock = DockStyle.Fill;
+            FilenameLabel.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            FilenameLabel.Location = new Point(0, 3);
+            FilenameLabel.Name = "FilenameLabel";
+            FilenameLabel.Size = new Size(85, 23);
+            FilenameLabel.TabIndex = 0;
+            FilenameLabel.Text = "FileName";
             // 
             // SettingsListView
             // 
@@ -209,6 +245,7 @@ namespace ConfigMaster
             SettingsListView.UseCompatibleStateImageBehavior = false;
             SettingsListView.View = View.Details;
             SettingsListView.MouseClick += SettingsListView_MouseClick;
+            SettingsListView.MouseDown += SettingsListView_MouseDown;
             // 
             // columnHeader1
             // 
@@ -269,43 +306,34 @@ namespace ConfigMaster
             // 
             // addNewSettingToolStripMenuItem
             // 
-            addNewSettingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addNewSettingToolStripMenuItem1, importToolStripMenuItem, exportAuditLogsToolStripMenuItem });
+            addNewSettingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addNewSettingToolStripMenuItem1, toolStripTextBox1, exportAuditLogsToolStripMenuItem });
             addNewSettingToolStripMenuItem.Image = (Image)resources.GetObject("addNewSettingToolStripMenuItem.Image");
             addNewSettingToolStripMenuItem.Name = "addNewSettingToolStripMenuItem";
             addNewSettingToolStripMenuItem.Size = new Size(66, 44);
             addNewSettingToolStripMenuItem.Text = "File";
-            addNewSettingToolStripMenuItem.Click += AddNewSettingToolStripMenuItem_Click;
             // 
             // addNewSettingToolStripMenuItem1
             // 
             addNewSettingToolStripMenuItem1.Image = (Image)resources.GetObject("addNewSettingToolStripMenuItem1.Image");
             addNewSettingToolStripMenuItem1.Name = "addNewSettingToolStripMenuItem1";
-            addNewSettingToolStripMenuItem1.Size = new Size(224, 26);
+            addNewSettingToolStripMenuItem1.Size = new Size(284, 26);
             addNewSettingToolStripMenuItem1.Text = "Add New Setting";
-            addNewSettingToolStripMenuItem1.Click += addNewSettingToolStripMenuItem1_Click;
+            addNewSettingToolStripMenuItem1.Click += addNewSettingToolStripMenuItem_Click;
             // 
-            // importToolStripMenuItem
+            // toolStripTextBox1
             // 
-            importToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { readOnlySettingsToolStripMenuItem });
-            importToolStripMenuItem.Image = (Image)resources.GetObject("importToolStripMenuItem.Image");
-            importToolStripMenuItem.Name = "importToolStripMenuItem";
-            importToolStripMenuItem.Size = new Size(224, 26);
-            importToolStripMenuItem.Text = "Import Scripts";
-            importToolStripMenuItem.Click += importToolStripMenuItem_Click;
-            // 
-            // readOnlySettingsToolStripMenuItem
-            // 
-            readOnlySettingsToolStripMenuItem.Image = (Image)resources.GetObject("readOnlySettingsToolStripMenuItem.Image");
-            readOnlySettingsToolStripMenuItem.Name = "readOnlySettingsToolStripMenuItem";
-            readOnlySettingsToolStripMenuItem.Size = new Size(288, 26);
-            readOnlySettingsToolStripMenuItem.Text = "Configure Read-Only Settings";
+            toolStripTextBox1.Image = (Image)resources.GetObject("toolStripTextBox1.Image");
+            toolStripTextBox1.Name = "toolStripTextBox1";
+            toolStripTextBox1.Size = new Size(284, 26);
+            toolStripTextBox1.Text = "Configure Read-Only Settngs";
             // 
             // exportAuditLogsToolStripMenuItem
             // 
             exportAuditLogsToolStripMenuItem.Image = (Image)resources.GetObject("exportAuditLogsToolStripMenuItem.Image");
             exportAuditLogsToolStripMenuItem.Name = "exportAuditLogsToolStripMenuItem";
-            exportAuditLogsToolStripMenuItem.Size = new Size(224, 26);
+            exportAuditLogsToolStripMenuItem.Size = new Size(284, 26);
             exportAuditLogsToolStripMenuItem.Text = "Export Audit Logs";
+            exportAuditLogsToolStripMenuItem.Click += exportAuditLogsToolStripMenuItem_Click;
             // 
             // HeaderPanel_SearchBoxArea
             // 
@@ -539,6 +567,7 @@ namespace ConfigMaster
             LockButton.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
             LockButton.UseAccentColor = false;
             LockButton.UseVisualStyleBackColor = true;
+            LockButton.Click += LockButton_Click;
             // 
             // iniBrowser
             // 
@@ -563,7 +592,6 @@ namespace ConfigMaster
             RightToLeft = RightToLeft.No;
             Text = "Config Master";
             WindowState = FormWindowState.Maximized;
-            FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             Menus.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
@@ -572,6 +600,9 @@ namespace ConfigMaster
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            SectionTreeViewPanel.ResumeLayout(false);
+            SectionTitlePanel.ResumeLayout(false);
+            SectionTitlePanel.PerformLayout();
             HeaderPanel.ResumeLayout(false);
             HeaderPanel_ContextMenuArea.ResumeLayout(false);
             HeaderPanel_ContextMenuArea.PerformLayout();
@@ -631,8 +662,10 @@ namespace ConfigMaster
         private Panel panel8;
         private MaterialSkin.Controls.MaterialButton LockButton;
         private ToolStripMenuItem addNewSettingToolStripMenuItem1;
-        private ToolStripMenuItem importToolStripMenuItem;
         private ToolStripMenuItem exportAuditLogsToolStripMenuItem;
-        private ToolStripMenuItem readOnlySettingsToolStripMenuItem;
+        private Panel SectionTreeViewPanel;
+        private Panel SectionTitlePanel;
+        private Label FilenameLabel;
+        private ToolStripMenuItem toolStripTextBox1;
     }
 }

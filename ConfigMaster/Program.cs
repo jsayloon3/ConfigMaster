@@ -1,14 +1,18 @@
 using ConfigMaster.BLL.Services;
+using ConfigMaster.BLL.Session;
 using ConfigMaster.DAL;
+using ConfigMaster.DAL.Profiles;
 using ConfigMaster.DAL.Repositories;
 using ConfigMaster.Defaults;
 using ConfigMaster.Modals;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ConfigMaster
@@ -47,7 +51,7 @@ namespace ConfigMaster
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.File(
-                    Path.Combine(AppContext.BaseDirectory, "logs", "applicationlog.log"), 
+                    Path.Combine(AppContext.BaseDirectory, "logs", "applicationlog.log"),
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 15
                 )
@@ -75,7 +79,7 @@ namespace ConfigMaster
                 if (!loginUsers.HasUser().Result) await loginUsers.Register();
             }
 
-            Application.Run(ServiceProvider.GetRequiredService<MainForm>());
+            Application.Run(ServiceProvider.GetRequiredService<AuthForm>());
         }
 
         static IHostBuilder CreateBuilder()
@@ -104,15 +108,23 @@ namespace ConfigMaster
                     services.AddScoped<IPathManagerService, PathManagerService>();
                     services.AddScoped<IAuthService, AuthService>();
                     services.AddScoped<IUserManagerService, UserManagerService>();
+                    services.AddScoped<IAuditTrailManagerService, AuditTrailManagerService>();
 
                     // Add Defaults
                     services.AddScoped<AddDefaultConfigurationPath>();
                     services.AddScoped<AddDefaultUsers>();
 
+                    // Add SessionManager
+                    services.AddSingleton<SessionManager>();
+
                     // Add Forms
                     services.AddTransient<MainForm>();
                     services.AddTransient<AuthForm>();
                     services.AddTransient<EditConfigurationModal>();
+                    services.AddTransient<ExportAuditLogModal>();
+
+                    // Add AutoMapper
+                    services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
                 });
         }
     }

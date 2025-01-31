@@ -10,7 +10,7 @@ namespace ConfigMaster.DAL.Repositories
     public interface IAuditTrailManagerRepository
     {
         Task<List<AuditLog>> GetAllAuditLog();
-        Task<AuditLog> GetAuditLogByCreatedDate(DateTime createdDate);
+        Task<List<AuditLog>> GetAuditLogByCreatedDate(DateTime createdDate);
         Task AddLog(AuditLog log);
     }
 }

@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ConfigMaster.Common.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace ConfigMaster.DAL
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options)
         {
         }
 
@@ -42,6 +43,11 @@ namespace ConfigMaster.DAL
                     RoleDescription = "Tech Support Role"
                 }
             );
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            
         }
     }
 }

@@ -1,20 +1,16 @@
 ﻿using ConfigMaster.BLL.Services;
+using ConfigMaster.BLL.Session;
+using ConfigMaster.Common.Enums;
 using ConfigMaster.ControlConfigurations;
 using ConfigMaster.Modals;
 using MaterialSkin.Controls;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Collections.Specialized.BitVector32;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ConfigMaster
 {
@@ -23,6 +19,7 @@ namespace ConfigMaster
         private readonly IIniFileService _iniFileService;
         private readonly IPathManagerService _pathManagerService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IAuditTrailManagerService _auditTrailManagerService;
 
         private ToolStripMenuItem _editOption = new ToolStripMenuItem("Edit");
         private ToolStripMenuItem _deleteOption = new ToolStripMenuItem("Delete");
@@ -31,39 +28,54 @@ namespace ConfigMaster
 
         private string _selectedSection = string.Empty;
         private List<ListViewItem> _allItems = new();
-        private ContextMenuStrip _menuStrip = new();
 
-        public MainForm(IIniFileService iniFileService, IPathManagerService pathManagerService, IServiceProvider serviceProvider)
+
+        public MainForm(IIniFileService iniFileService, IPathManagerService pathManagerService, IServiceProvider serviceProvider, IAuditTrailManagerService auditTrailManagerService)
         {
             InitializeComponent();
+            InitializeMaterialSkin();
+            EnableDoubleBuffering();
             InitializeContextMenu();
-            MaterialSkinTheme materialSkin = new MaterialSkinTheme(this);
-            materialSkin.SetTheme();
 
             _iniFileService = iniFileService;
             _pathManagerService = pathManagerService;
             _serviceProvider = serviceProvider;
+            _auditTrailManagerService = auditTrailManagerService;
+        }
+
+        private void InitializeMaterialSkin()
+        {
+            MaterialSkinTheme materialSkin = new MaterialSkinTheme(this);
+            materialSkin.SetTheme();
+        }
+
+        private void EnableDoubleBuffering()
+        {
+            DoubleBuffering doubleBuffering = new DoubleBuffering(this);
+            doubleBuffering.EnableDoubleBuffering(enableChildControlBuffering: false);
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
             await PopulateSectionTreeviewAsync();
         }
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Application.Exit();
-        }
 
         private async Task PopulateSectionTreeviewAsync()
         {
+            // Display Filename on top
+            FilenameLabel.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            FilenameLabel.Text = Path.GetFileName((await _pathManagerService.GetPath()).Path);
+
             SectionTreeView.Nodes.Clear();
             await LoadFileAsync();
             var sections = await _iniFileService.GetSections();
             foreach (var section in sections)
             {
-                var sectionNode = new TreeNode(section);
-                sectionNode.Tag = section;
-                sectionNode.NodeFont = new Font("Segoe UI", 10, FontStyle.Bold);
+                var sectionNode = new TreeNode(section)
+                {
+                    Tag = section,
+                    NodeFont = new Font("Segoe UI", 10, FontStyle.Bold)
+                };
                 SectionTreeView.Nodes.Add(sectionNode);
                 sectionNode.Text = sectionNode.Text;
                 SectionTreeView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the TreeView control itself uses the same font
@@ -170,27 +182,25 @@ namespace ConfigMaster
             _editOption = new ToolStripMenuItem("Edit");
             _editOption.Image = imageList1.Images["edit.png"];
             _editOption.Click += EditMenuItem_Click;
-            _menuStrip.Items.Add(_editOption);
-            _menuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStripListView.Items.Add(_editOption);
+            contextMenuStripListView.Items.Add(new ToolStripSeparator());
 
             _deleteOption = new ToolStripMenuItem("Delete");
             _deleteOption.Image = imageList1.Images["recycle-bin.png"];
             _deleteOption.Click += _deleteOption_Click;
-            _menuStrip.Items.Add(_deleteOption);
-            _menuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStripListView.Items.Add(_deleteOption);
+            contextMenuStripListView.Items.Add(new ToolStripSeparator());
 
             _commentOption = new ToolStripMenuItem("Comment");
             _commentOption.Image = imageList1.Images["eraser.png"];
             _commentOption.Click += _commentOption_Click;
-            _menuStrip.Items.Add(_commentOption);
-            _menuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStripListView.Items.Add(_commentOption);
+            contextMenuStripListView.Items.Add(new ToolStripSeparator());
 
             _uncommentOption = new ToolStripMenuItem("Uncomment");
             _uncommentOption.Image = imageList1.Images["plus.png"];
             _uncommentOption.Click += _uncommentOption_Click;
-            _menuStrip.Items.Add(_uncommentOption);
-
-            SettingsListView.ContextMenuStrip = _menuStrip;
+            contextMenuStripListView.Items.Add(_uncommentOption);
         }
 
         private async void _deleteOption_Click(object? sender, EventArgs e)
@@ -219,6 +229,7 @@ namespace ConfigMaster
                     if (isDeleted)
                     {
                         SettingsListView.Items.RemoveAt(selectedItem.Index);
+                        await _auditTrailManagerService.AddLog($"Deleted setting: [{section}] {selectedItem.Text}", AuditTrail.ActionType.Delete, "Success");
                     }
                     else
                     {
@@ -244,6 +255,8 @@ namespace ConfigMaster
                 selectedItem.Font = new Font("Segoe UI", 9f, FontStyle.Strikeout);
                 selectedItem.ForeColor = Color.Gray;
                 SettingsListView.EndUpdate();
+
+                await _auditTrailManagerService.AddLog($"Commented setting: [{section}] {updatedKey.FirstOrDefault().Key}={updatedKey.FirstOrDefault().Value}", AuditTrail.ActionType.Comment, "Success");
             }
         }
 
@@ -263,10 +276,12 @@ namespace ConfigMaster
                 selectedItem.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
                 selectedItem.ForeColor = Color.FromArgb(255, 0, 0, 0);
                 SettingsListView.EndUpdate();
+
+                await _auditTrailManagerService.AddLog($"Uncomment setting: [{section}] {updatedKey.FirstOrDefault().Key}={updatedKey.FirstOrDefault().Value}", AuditTrail.ActionType.Uncomment, "Success");
             }
         }
 
-        private void EditMenuItem_Click(object? sender, EventArgs e)
+        private async void EditMenuItem_Click(object? sender, EventArgs e)
         {
             if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
             {
@@ -278,12 +293,15 @@ namespace ConfigMaster
                 edditSetting.Initialize(title: "Update Setting", isAdd: false, isEdit: true, section, selectedItem.Text, subItemText);
                 edditSetting.ShowDialog();
 
+
                 if (edditSetting.IsUpdated)
                 {
                     SettingsListView.BeginUpdate();
                     selectedItem.Text = edditSetting.GetResponseSettingName;
                     selectedItem.SubItems[1].Text = edditSetting.GetResponseSettingValue;
                     SettingsListView.EndUpdate();
+
+                    await _auditTrailManagerService.AddLog($"Updated setting: [{edditSetting.GetResponseSectionName}] {edditSetting.GetResponseSettingName}={edditSetting.GetResponseSettingValue}", AuditTrail.ActionType.Update, "Success");
                 }
             }
         }
@@ -306,13 +324,9 @@ namespace ConfigMaster
             {
                 SettingsListView.Items.Clear();
                 await _pathManagerService.UpdatePath(iniBrowser.FileName);
+                await _auditTrailManagerService.AddLog(message: "Loaded configuration", AuditTrail.ActionType.FileAccess, status: "Success");
                 await PopulateSectionTreeviewAsync();
             }
-        }
-
-        private void AddNewSettingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-           
         }
 
         private void SettingsListView_MouseClick(object sender, MouseEventArgs e)
@@ -330,7 +344,7 @@ namespace ConfigMaster
                     _editOption.Enabled = !isCommented;
                     _deleteOption.Enabled = true;
 
-                    _menuStrip.Show(SettingsListView, e.Location);
+                    contextMenuStripListView.Show(SettingsListView, e.Location);
                 }
             }
         }
@@ -340,30 +354,76 @@ namespace ConfigMaster
 
         }
 
-        private void addNewSettingToolStripMenuItem1_Click(object sender, EventArgs e)
+        private async void addNewSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var addSetting = _serviceProvider.GetRequiredService<EditConfigurationModal>();
             addSetting.Initialize(title: "New Setting", isAdd: true, isEdit: false);
             addSetting.ShowDialog();
 
+
             if (addSetting.IsUpdated)
             {
+                await _auditTrailManagerService.AddLog($"Added new setting: [{addSetting.GetResponseSectionName}] {addSetting.GetResponseSettingName}={addSetting.GetResponseSettingValue}", AuditTrail.ActionType.Create, "Success");
+
                 if (!addSetting.IsSettingAddedOnExistingSection)
                 {
-                    var sectionNode = new TreeNode(addSetting.GetResponseSectionName);
-                    sectionNode.Tag = addSetting.GetResponseSectionName;
-                    sectionNode.NodeFont = new Font("Segoe UI", 10, FontStyle.Bold);
+                    var sectionNode = new TreeNode(addSetting.GetResponseSectionName)
+                    {
+                        Tag = addSetting.GetResponseSectionName,
+                        NodeFont = new Font("Segoe UI", 10, FontStyle.Bold)
+                    };
+
                     SectionTreeView.Nodes.Add(sectionNode);
                     sectionNode.Text = sectionNode.Text;
                     SectionTreeView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the TreeView control itself uses the same font
                 }
 
-                if (SettingsListView.SelectedItems.Count > 0 && SectionTreeView.SelectedNode != null)
+                if (SettingsListView.SelectedItems.Count > 0 || SectionTreeView.SelectedNode != null)
                 {
                     SettingsListView.BeginUpdate();
                     var item = CreateListViewItem(addSetting.GetResponseSettingName, addSetting.GetResponseSettingValue);
                     SettingsListView.Items.Add(item);
                     SettingsListView.EndUpdate();
+                }
+            }
+        }
+
+        private async void LockButton_Click(object sender, EventArgs e)
+        {
+            await _auditTrailManagerService.AddLog($"Application locked", AuditTrail.ActionType.Lock, "Success");
+
+            Hide();
+            var launchAuthForm = _serviceProvider.GetRequiredService<AuthForm>();
+            launchAuthForm.ShowDialog();
+        }
+
+        private void exportAuditLogsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var exportAuditLog = _serviceProvider.GetRequiredService<ExportAuditLogModal>();
+            exportAuditLog.Initialize(title: "Export Audit Log");
+            exportAuditLog.ShowDialog();
+        }
+
+        private void SettingsListView_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (SettingsListView.Items.Count == 0)
+                {
+                    // Disable the context menu if no items are loaded
+                    contextMenuStripListView.Enabled = false;
+                }
+                else
+                { 
+                    // Enable the context menu if items are loaded
+                    contextMenuStripListView.Enabled = true;
+
+                    // Check if the click is on an item
+                    if (SettingsListView.HitTest(e.Location).Item == null)
+                    { 
+                        // Disable the context menu if the click is not on an item
+                        contextMenuStripListView.Enabled = false;
+                    }
                 }
             }
         }

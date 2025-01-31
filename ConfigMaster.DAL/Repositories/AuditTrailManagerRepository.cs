@@ -50,19 +50,19 @@ namespace ConfigMaster.DAL.Repositories
             }
         }
 
-        public async Task<AuditLog> GetAuditLogByCreatedDate(DateTime createdDate)
+        public async Task<List<AuditLog>> GetAuditLogByCreatedDate(DateTime createdDate)
         {
             try
             {
-                var log = await _dbContext.AuditLogs
+                var logs = await _dbContext.AuditLogs
                     .Where(log => log.Created.Date == createdDate.Date)
-                    .FirstOrDefaultAsync();
-                _logger.LogInformation("Retrieved audit log by created date successfully: {@CreatedDate}", createdDate);
-                return log;
+                    .ToListAsync();
+                _logger.LogInformation("Retrieved audit logs by created date successfully: {@CreatedDate}", createdDate);
+                return logs;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving an audit log by created date: {@CreatedDate}", createdDate);
+                _logger.LogError(ex, "An error occurred while retrieving audit logs by created date: {@CreatedDate}", createdDate);
                 throw;
             }
         }
