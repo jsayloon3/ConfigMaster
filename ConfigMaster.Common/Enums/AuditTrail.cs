@@ -26,7 +26,11 @@ namespace ConfigMaster.Common.Enums
             [EnumMember(Value = "Comment")]
             Comment,
             [EnumMember(Value = "Uncomment")]
-            Uncomment
+            Uncomment,
+            [EnumMember(Value = "Import")]
+            Import,
+            [EnumMember(Value = "Export")]
+            Export
         }
     }
 }

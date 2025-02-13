@@ -1,3 +1,4 @@
+using ConfigMaster.BLL.Cache;
 using ConfigMaster.BLL.Services;
 using ConfigMaster.BLL.Session;
 using ConfigMaster.DAL;
@@ -22,6 +23,7 @@ namespace ConfigMaster
         public static IServiceProvider? ServiceProvider { get; private set; }
         public static IConfiguration? Configuration { get; private set; }
         public static string _filePath = string.Empty;
+        private static string _localConfiguration = string.Empty;
 
         /// <summary>
         ///  The main entry point for the application.
@@ -29,14 +31,39 @@ namespace ConfigMaster
         [STAThread]
         static void Main(string[] args)
         {
-            MainAsync(args).GetAwaiter().GetResult();
+            using (Mutex mutex = new Mutex(false, "ConfigMaster"))
+            {
+                if (!mutex.WaitOne(0, false))
+                {
+                    MessageBox.Show("Another instance of ConfigMaster is already running.", "ConfigMaster", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                try
+                {
+                    MainAsync(args).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    Log.Fatal(ex, "An unhandled exception occurred during application execution.");
+                    MessageBox.Show("An unexpected error occurred. Please check the logs for more details.", "ConfigMaster", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Log.CloseAndFlush();
+                }
+            }
         }
 
         static async Task MainAsync(string[] args)
         {
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ConfigMaster");
-            if (!Directory.Exists(dbPath)) Directory.CreateDirectory(dbPath);
-            string dbFile = Path.Combine(dbPath, "configmaster.db");
+            string applicationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ConfigMaster");
+            if (!Directory.Exists(applicationPath)) Directory.CreateDirectory(applicationPath);
+            string dbFile = Path.Combine(applicationPath, "configmaster.db");
+
+            // Tool configurations
+            _localConfiguration = Path.Combine(applicationPath, "LocalConfiguration");
+            if (!Directory.Exists(_localConfiguration)) Directory.CreateDirectory(_localConfiguration);
 
             // Build configuration
             Configuration = new ConfigurationBuilder()
@@ -77,6 +104,13 @@ namespace ConfigMaster
 
                 var loginUsers = scope.ServiceProvider.GetRequiredService<AddDefaultUsers>();
                 if (!loginUsers.HasUser().Result) await loginUsers.Register();
+
+                if (args.Length > 0)
+                { 
+                    string filePathOpen = args[0];
+                    var updatePath = scope.ServiceProvider.GetRequiredService<IPathManagerService>();
+                    await updatePath.UpdatePath(filePathOpen);
+                }
             }
 
             Application.Run(ServiceProvider.GetRequiredService<AuthForm>());
@@ -116,12 +150,14 @@ namespace ConfigMaster
 
                     // Add SessionManager
                     services.AddSingleton<SessionManager>();
+                    services.AddSingleton<ILocalConfigurationPath>(provider => new LocalConfigurationPath(_localConfiguration));
 
                     // Add Forms
                     services.AddTransient<MainForm>();
                     services.AddTransient<AuthForm>();
                     services.AddTransient<EditConfigurationModal>();
                     services.AddTransient<ExportAuditLogModal>();
+                    services.AddTransient<ConfigureReadOnlySettingsModal>();
 
                     // Add AutoMapper
                     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

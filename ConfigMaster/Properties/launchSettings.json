@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConfigMaster": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\iRipple\\Downloads\\BARTER_CX.INI"
+    }
+  }
+}

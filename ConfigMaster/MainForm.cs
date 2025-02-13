@@ -1,4 +1,5 @@
-﻿using ConfigMaster.BLL.Services;
+﻿using ConfigMaster.BLL.Cache;
+using ConfigMaster.BLL.Services;
 using ConfigMaster.BLL.Session;
 using ConfigMaster.Common.Enums;
 using ConfigMaster.ControlConfigurations;
@@ -9,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Collections.Specialized.BitVector32;
 
 namespace ConfigMaster
 {
@@ -20,6 +23,7 @@ namespace ConfigMaster
         private readonly IPathManagerService _pathManagerService;
         private readonly IServiceProvider _serviceProvider;
         private readonly IAuditTrailManagerService _auditTrailManagerService;
+        private readonly ILocalConfigurationPath _localConfigurationPath;
 
         private ToolStripMenuItem _editOption = new ToolStripMenuItem("Edit");
         private ToolStripMenuItem _deleteOption = new ToolStripMenuItem("Delete");
@@ -29,8 +33,9 @@ namespace ConfigMaster
         private string _selectedSection = string.Empty;
         private List<ListViewItem> _allItems = new();
 
+        private Dictionary<string, Dictionary<string, List<string>>> _readOnlySettings = new();
 
-        public MainForm(IIniFileService iniFileService, IPathManagerService pathManagerService, IServiceProvider serviceProvider, IAuditTrailManagerService auditTrailManagerService)
+        public MainForm(IIniFileService iniFileService, IPathManagerService pathManagerService, IServiceProvider serviceProvider, IAuditTrailManagerService auditTrailManagerService, ILocalConfigurationPath localConfigurationPath)
         {
             InitializeComponent();
             InitializeMaterialSkin();
@@ -41,6 +46,7 @@ namespace ConfigMaster
             _pathManagerService = pathManagerService;
             _serviceProvider = serviceProvider;
             _auditTrailManagerService = auditTrailManagerService;
+            _localConfigurationPath = localConfigurationPath;
         }
 
         private void InitializeMaterialSkin()
@@ -57,6 +63,9 @@ namespace ConfigMaster
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
+            EnsureOnlyReadOnlySettingsFileExists();
+            LoadReadOnlySettings(Path.Combine(_localConfigurationPath.Path, "readonly_settings.json"));
+
             await PopulateSectionTreeviewAsync();
         }
 
@@ -65,6 +74,10 @@ namespace ConfigMaster
             // Display Filename on top
             FilenameLabel.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             FilenameLabel.Text = Path.GetFileName((await _pathManagerService.GetPath()).Path);
+
+            // Todo: Implement control configuration
+            var test = _localConfigurationPath.Path;
+
 
             SectionTreeView.Nodes.Clear();
             await LoadFileAsync();
@@ -121,18 +134,35 @@ namespace ConfigMaster
                 _allItems.Add((ListViewItem)item.Clone());
             }
             SettingsListView.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Ensure the ListView control itself uses the same font
+
+            ApplyReadOnlySettings(iniFilename: FilenameLabel.Text);
         }
 
         private ListViewItem CreateListViewItem(string key, string value)
         {
             var item = new ListViewItem(key)
             {
-                UseItemStyleForSubItems = true,
+                UseItemStyleForSubItems = false,
                 Font = key.StartsWith(';') ? new Font("Segoe UI", 10, FontStyle.Strikeout) : new Font("Segoe UI", 10, FontStyle.Regular),
                 ForeColor = key.StartsWith(';') ? Color.Gray : Color.Black,
                 ImageKey = "repair.png"
             };
+
             item.SubItems.Add(value);
+            if (key.StartsWith(';') || key.StartsWith('#'))
+            {
+                item.SubItems[1].Font = new Font("Segoe UI", 10, FontStyle.Strikeout);
+                item.SubItems[1].ForeColor = Color.Gray;
+                item.SubItems.Add("Commented");
+                item.SubItems[2].Font = new Font("Segoe UI", 10, FontStyle.Regular); // Set the font of the third subitem to normal
+            }
+
+            if (key.StartsWith('*'))
+            {
+                item.SubItems.Add("Read-Only");
+                item.SubItems[2].Font = new Font("Segoe UI", 10, FontStyle.Regular); // Set the font of the third subitem to normal
+            }
+
             return item;
         }
 
@@ -251,9 +281,12 @@ namespace ConfigMaster
                 var updatedKey = await _iniFileService.CommentKey(configurationData, section, selectedItem.Text);
                 SettingsListView.BeginUpdate();
                 selectedItem.Text = updatedKey.FirstOrDefault().Key;
-                selectedItem.SubItems[1].Text = updatedKey.FirstOrDefault().Value;
                 selectedItem.Font = new Font("Segoe UI", 9f, FontStyle.Strikeout);
                 selectedItem.ForeColor = Color.Gray;
+                selectedItem.SubItems[1].Text = updatedKey.FirstOrDefault().Value;
+                selectedItem.SubItems[1].Font = new Font("Segoe UI", 9f, FontStyle.Strikeout);
+                selectedItem.SubItems[1].ForeColor = Color.Gray;
+                selectedItem.SubItems.Add("Commented");
                 SettingsListView.EndUpdate();
 
                 await _auditTrailManagerService.AddLog($"Commented setting: [{section}] {updatedKey.FirstOrDefault().Key}={updatedKey.FirstOrDefault().Value}", AuditTrail.ActionType.Comment, "Success");
@@ -272,9 +305,12 @@ namespace ConfigMaster
                 var updatedKey = await _iniFileService.UnCommentKey(configurationData, section, selectedItem.Text);
                 SettingsListView.BeginUpdate();
                 selectedItem.Text = updatedKey.FirstOrDefault().Key;
-                selectedItem.SubItems[1].Text = updatedKey.FirstOrDefault().Value;
                 selectedItem.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
                 selectedItem.ForeColor = Color.FromArgb(255, 0, 0, 0);
+                selectedItem.SubItems[1].Text = updatedKey.FirstOrDefault().Value;
+                selectedItem.SubItems[1].Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+                selectedItem.SubItems[1].ForeColor = Color.FromArgb(255, 0, 0, 0);
+                selectedItem.SubItems[2].Text = string.Empty;
                 SettingsListView.EndUpdate();
 
                 await _auditTrailManagerService.AddLog($"Uncomment setting: [{section}] {updatedKey.FirstOrDefault().Key}={updatedKey.FirstOrDefault().Value}", AuditTrail.ActionType.Uncomment, "Success");
@@ -344,14 +380,14 @@ namespace ConfigMaster
                     _editOption.Enabled = !isCommented;
                     _deleteOption.Enabled = true;
 
+                    if (selectedItem.Tag != null && selectedItem.Tag.ToString() == "read-only")
+                    {
+                        contextMenuStripListView.Enabled = false;
+                    }
+
                     contextMenuStripListView.Show(SettingsListView, e.Location);
                 }
             }
-        }
-
-        private void importToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private async void addNewSettingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -414,17 +450,129 @@ namespace ConfigMaster
                     contextMenuStripListView.Enabled = false;
                 }
                 else
-                { 
+                {
                     // Enable the context menu if items are loaded
                     contextMenuStripListView.Enabled = true;
 
                     // Check if the click is on an item
                     if (SettingsListView.HitTest(e.Location).Item == null)
-                    { 
+                    {
                         // Disable the context menu if the click is not on an item
                         contextMenuStripListView.Enabled = false;
                     }
                 }
+            }
+        }
+
+        private void EnsureOnlyReadOnlySettingsFileExists()
+        {
+            string settingsDir = _localConfigurationPath.Path;
+
+            if (Directory.Exists(settingsDir))
+            {
+                var jsonFiles = Directory.GetFiles(settingsDir, "*.json");
+
+                foreach (var jsonFile in jsonFiles)
+                {
+                    string fileName = Path.GetFileName(jsonFile);
+                    if (!fileName.Equals("readonly_settings.json", StringComparison.OrdinalIgnoreCase))
+                    {
+                        File.Delete(jsonFile); // Delete any unwanted JSON files
+                        MessageBox.Show($"Unauthorized file '{fileName}' was removed.", "Security Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+        }
+
+        private void LoadReadOnlySettings(string jsonFilePath)
+        {
+            if (File.Exists(jsonFilePath))
+            {
+                string jsonContent = File.ReadAllText(jsonFilePath);
+                _readOnlySettings = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, List<string>>>>(jsonContent) ?? new Dictionary<string, Dictionary<string, List<string>>>();
+            }
+            else
+            {
+                _readOnlySettings = new Dictionary<string, Dictionary<string, List<string>>>();
+            }
+        }
+
+        private void ApplyReadOnlySettings(string iniFilename)
+        {
+            if (_readOnlySettings.ContainsKey(iniFilename))
+            {
+                var fileReadOnlySettings = _readOnlySettings[iniFilename];
+
+                foreach (var section in fileReadOnlySettings)
+                {
+                    string sectionName = section.Key;
+                    List<string> readOnlyKeys = section.Value;
+
+                    foreach (ListViewItem item in SettingsListView.Items)
+                    {
+                        string itemSection = SectionTreeView.SelectedNode.Tag?.ToString() ?? string.Empty;
+                        string itemKey = item.SubItems[0].Text;
+
+                        if (itemSection == sectionName && readOnlyKeys.Contains(itemKey))
+                        {
+                            item.ForeColor = Color.Red;
+                            item.SubItems[1].ForeColor = Color.Red;
+                            item.Tag = "read-only";
+                            item.SubItems.Add("Read-Only");
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void importReadOnlySettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "JSON Files (*json)|*.json",
+                Title = "Import Read-Only Settings",
+                FileName = "readonly_settings.json"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string importedFilePath = openFileDialog.FileName;
+                string fileName = Path.GetFileName(importedFilePath);
+                string targetFilePath = Path.Combine(_localConfigurationPath.Path, "readonly_settings.json");
+
+                // Block if the file is not named readonly_settings.json
+                if (!fileName.Equals("readonly_settings.json", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("Invalid file name! Please select 'readonly_settings.json' only", "Import Blocked", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Overwrite the existing file with the new one
+                File.Copy(importedFilePath, targetFilePath, overwrite: true);
+
+                LoadReadOnlySettings(targetFilePath);
+                await LoadItemsAsync();
+                await _auditTrailManagerService.AddLog($"Imported readonly_settings.json script", AuditTrail.ActionType.Import, "Success");
+
+                MessageBox.Show("Read-only settings imported and saved successfully.", "Import Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private async void expToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                Title = "Export Read-Only Settings",
+                FileName = "readonly_settings.json"
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            { 
+                string jsonContent = JsonSerializer.Serialize(_readOnlySettings, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(saveFileDialog.FileName, jsonContent);
+                await _auditTrailManagerService.AddLog($"Exported readonly_settings.json script", AuditTrail.ActionType.Export, "Success");
+                MessageBox.Show("Read-only settings exported successfully.", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

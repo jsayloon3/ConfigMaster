@@ -44,15 +44,17 @@ namespace ConfigMaster
             SettingsListView = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
+            columnHeader3 = new ColumnHeader();
             contextMenuStripListView = new ContextMenuStrip(components);
             HeaderPanel = new Panel();
             HeaderPanel_ContextMenuArea = new Panel();
             menuStripSetting = new MenuStrip();
             loadConfigurationToolStripMenuItem = new ToolStripMenuItem();
             addNewSettingToolStripMenuItem = new ToolStripMenuItem();
-            addNewSettingToolStripMenuItem1 = new ToolStripMenuItem();
-            toolStripTextBox1 = new ToolStripMenuItem();
-            exportAuditLogsToolStripMenuItem = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
+            importReadOnlySettingsToolStripMenuItem = new ToolStripMenuItem();
+            expToolStripMenuItem = new ToolStripMenuItem();
+            exportAuditLogToolStripMenuItem = new ToolStripMenuItem();
             HeaderPanel_SearchBoxArea = new Panel();
             SearchTextBox = new MaterialSkin.Controls.MaterialTextBox();
             tabPage2 = new TabPage();
@@ -228,7 +230,7 @@ namespace ConfigMaster
             // SettingsListView
             // 
             SettingsListView.Activation = ItemActivation.OneClick;
-            SettingsListView.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2 });
+            SettingsListView.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3 });
             SettingsListView.ContextMenuStrip = contextMenuStripListView;
             SettingsListView.Dock = DockStyle.Fill;
             SettingsListView.FullRowSelect = true;
@@ -256,6 +258,11 @@ namespace ConfigMaster
             // 
             columnHeader2.Text = "Settings Value";
             columnHeader2.Width = 600;
+            // 
+            // columnHeader3
+            // 
+            columnHeader3.Text = "Status";
+            columnHeader3.Width = 200;
             // 
             // contextMenuStripListView
             // 
@@ -288,7 +295,7 @@ namespace ConfigMaster
             // 
             menuStripSetting.Dock = DockStyle.Fill;
             menuStripSetting.ImageScalingSize = new Size(20, 20);
-            menuStripSetting.Items.AddRange(new ToolStripItem[] { loadConfigurationToolStripMenuItem, addNewSettingToolStripMenuItem });
+            menuStripSetting.Items.AddRange(new ToolStripItem[] { loadConfigurationToolStripMenuItem, addNewSettingToolStripMenuItem, settingsToolStripMenuItem });
             menuStripSetting.Location = new Point(0, 0);
             menuStripSetting.Name = "menuStripSetting";
             menuStripSetting.Padding = new Padding(3);
@@ -306,34 +313,43 @@ namespace ConfigMaster
             // 
             // addNewSettingToolStripMenuItem
             // 
-            addNewSettingToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addNewSettingToolStripMenuItem1, toolStripTextBox1, exportAuditLogsToolStripMenuItem });
             addNewSettingToolStripMenuItem.Image = (Image)resources.GetObject("addNewSettingToolStripMenuItem.Image");
             addNewSettingToolStripMenuItem.Name = "addNewSettingToolStripMenuItem";
-            addNewSettingToolStripMenuItem.Size = new Size(66, 44);
-            addNewSettingToolStripMenuItem.Text = "File";
+            addNewSettingToolStripMenuItem.Size = new Size(156, 44);
+            addNewSettingToolStripMenuItem.Text = "Add New Setting";
+            addNewSettingToolStripMenuItem.Click += addNewSettingToolStripMenuItem_Click;
             // 
-            // addNewSettingToolStripMenuItem1
+            // settingsToolStripMenuItem
             // 
-            addNewSettingToolStripMenuItem1.Image = (Image)resources.GetObject("addNewSettingToolStripMenuItem1.Image");
-            addNewSettingToolStripMenuItem1.Name = "addNewSettingToolStripMenuItem1";
-            addNewSettingToolStripMenuItem1.Size = new Size(284, 26);
-            addNewSettingToolStripMenuItem1.Text = "Add New Setting";
-            addNewSettingToolStripMenuItem1.Click += addNewSettingToolStripMenuItem_Click;
+            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { importReadOnlySettingsToolStripMenuItem, expToolStripMenuItem, exportAuditLogToolStripMenuItem });
+            settingsToolStripMenuItem.Image = (Image)resources.GetObject("settingsToolStripMenuItem.Image");
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(96, 44);
+            settingsToolStripMenuItem.Text = "Settings";
             // 
-            // toolStripTextBox1
+            // importReadOnlySettingsToolStripMenuItem
             // 
-            toolStripTextBox1.Image = (Image)resources.GetObject("toolStripTextBox1.Image");
-            toolStripTextBox1.Name = "toolStripTextBox1";
-            toolStripTextBox1.Size = new Size(284, 26);
-            toolStripTextBox1.Text = "Configure Read-Only Settngs";
+            importReadOnlySettingsToolStripMenuItem.Image = (Image)resources.GetObject("importReadOnlySettingsToolStripMenuItem.Image");
+            importReadOnlySettingsToolStripMenuItem.Name = "importReadOnlySettingsToolStripMenuItem";
+            importReadOnlySettingsToolStripMenuItem.Size = new Size(268, 26);
+            importReadOnlySettingsToolStripMenuItem.Text = "Import Read-Only Settings";
+            importReadOnlySettingsToolStripMenuItem.Click += importReadOnlySettingsToolStripMenuItem_Click;
             // 
-            // exportAuditLogsToolStripMenuItem
+            // expToolStripMenuItem
             // 
-            exportAuditLogsToolStripMenuItem.Image = (Image)resources.GetObject("exportAuditLogsToolStripMenuItem.Image");
-            exportAuditLogsToolStripMenuItem.Name = "exportAuditLogsToolStripMenuItem";
-            exportAuditLogsToolStripMenuItem.Size = new Size(284, 26);
-            exportAuditLogsToolStripMenuItem.Text = "Export Audit Logs";
-            exportAuditLogsToolStripMenuItem.Click += exportAuditLogsToolStripMenuItem_Click;
+            expToolStripMenuItem.Image = (Image)resources.GetObject("expToolStripMenuItem.Image");
+            expToolStripMenuItem.Name = "expToolStripMenuItem";
+            expToolStripMenuItem.Size = new Size(268, 26);
+            expToolStripMenuItem.Text = "Export Read-Only Settings";
+            expToolStripMenuItem.Click += expToolStripMenuItem_Click;
+            // 
+            // exportAuditLogToolStripMenuItem
+            // 
+            exportAuditLogToolStripMenuItem.Image = (Image)resources.GetObject("exportAuditLogToolStripMenuItem.Image");
+            exportAuditLogToolStripMenuItem.Name = "exportAuditLogToolStripMenuItem";
+            exportAuditLogToolStripMenuItem.Size = new Size(268, 26);
+            exportAuditLogToolStripMenuItem.Text = "Export Audit Logs";
+            exportAuditLogToolStripMenuItem.Click += exportAuditLogsToolStripMenuItem_Click;
             // 
             // HeaderPanel_SearchBoxArea
             // 
@@ -661,11 +677,13 @@ namespace ConfigMaster
         private MaterialSkin.Controls.MaterialButton materialButton1;
         private Panel panel8;
         private MaterialSkin.Controls.MaterialButton LockButton;
-        private ToolStripMenuItem addNewSettingToolStripMenuItem1;
-        private ToolStripMenuItem exportAuditLogsToolStripMenuItem;
         private Panel SectionTreeViewPanel;
         private Panel SectionTitlePanel;
         private Label FilenameLabel;
-        private ToolStripMenuItem toolStripTextBox1;
+        private ColumnHeader columnHeader3;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private ToolStripMenuItem importReadOnlySettingsToolStripMenuItem;
+        private ToolStripMenuItem expToolStripMenuItem;
+        private ToolStripMenuItem exportAuditLogToolStripMenuItem;
     }
 }

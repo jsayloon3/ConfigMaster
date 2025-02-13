@@ -6,12 +6,16 @@
         <Nullable>enable</Nullable>
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
+        <ApplicationIcon>Root\images\configmaster.ico</ApplicationIcon>
+        <Copyright>Config Master 2024</Copyright>
+        <PackageIcon>whale.png</PackageIcon>
+        <FileVersion>1.1.0.0</FileVersion>
 		<!--<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>-->
       </PropertyGroup>
 
       <ItemGroup>
-        <Folder Include="Root\images\" />
+        <Content Include="Root\images\configmaster.ico" />
       </ItemGroup>
 
       <ItemGroup>
@@ -38,6 +42,9 @@
       </ItemGroup>
 
       <ItemGroup>
+        <Compile Update="Modals\ConfigureReadOnlySettingsModal.cs">
+          <SubType>Form</SubType>
+        </Compile>
         <Compile Update="Modals\ExportAuditLogModal.cs">
           <SubType>Form</SubType>
         </Compile>
@@ -53,5 +60,12 @@
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+      </ItemGroup>
+
+      <ItemGroup>
+        <None Update="Root\images\whale.png">
+          <Pack>True</Pack>
+          <PackagePath>\</PackagePath>
+        </None>
       </ItemGroup>
 </Project>
